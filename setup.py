@@ -3,7 +3,7 @@ import sys, os
 
 version = '1.0'
 
-setup(name='pypod',
+setup(name='py-pod',
       version=version,
       description='Proper Orthogonal Decomposition',
       long_description="""\
