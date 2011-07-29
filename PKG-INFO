@@ -1,0 +1,17 @@
+Metadata-Version: 1.0
+Name: pypod
+Version: 1.0
+Summary: Proper Orthogonal Decomposition
+Home-page: http://code.google.com/p/py-pod
+Author: Christophe Alexandre
+Author-email: ch.alexandre at bluewin dot ch
+License: LGPL
+Description: Replicating an input signal using a library of reference signals
+Keywords: Vector Space Projection Proper Orthogonal Decomposition POD PCA
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)
+Classifier: Programming Language :: Python
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
