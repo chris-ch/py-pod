@@ -113,9 +113,9 @@
 </tr>
   <tr><td class="summary">
   <ul class="nomargin">
-    <li> <strong class="uidlink"><a href="pod.linalg-module.html">pod.linalg</a></strong>: <em class="summary">Basic linear algebra components and functions.</em>    </li>
-    <li> <strong class="uidlink"><a href="pod.util-module.html">pod.util</a></strong>: <em class="summary">Operations on matrices and various tools.</em>    </li>
-    <li> <strong class="uidlink"><a href="pod.vecspace-module.html">pod.vecspace</a></strong>: <em class="summary">Toolbox for handling projections onto linear varieties.</em>    </li>
+    <li class="private"> <strong class="uidlink"><a href="pod.linalg-module.html" onclick="show_private();">pod.linalg</a></strong>: <em class="summary">Basic linear algebra components and functions.</em>    </li>
+    <li class="private"> <strong class="uidlink"><a href="pod.util-module.html" onclick="show_private();">pod.util</a></strong>: <em class="summary">Operations on matrices and various tools.</em>    </li>
+    <li class="private"> <strong class="uidlink"><a href="pod.vecspace-module.html" onclick="show_private();">pod.vecspace</a></strong>: <em class="summary">Toolbox for handling projections onto linear varieties.</em>    </li>
   </ul></td></tr>
 </table>
 
@@ -128,22 +128,6 @@
   <td align="left" colspan="2" class="table-header">
     <span class="table-header">Classes</span></td>
 </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="pod.IterativeDecomposition-class.html" class="summary-name">IterativeDecomposition</a><br />
-      Decomposition interface definition.
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="pod.L2NormMinDecomposition-class.html" class="summary-name">L2NormMinDecomposition</a><br />
-      Replication minimizing L2 norm in the weights space: min sum(|Wi|).
-    </td>
-  </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
@@ -162,16 +146,34 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pod-module.html#combined_distance" class="summary-sig-name">combined_distance</a>(<span class="summary-sig-arg">generator_weight</span>)</span><br />
+      Distance function used for ordering the projections.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pod-pysrc.html#combined_distance">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">IterativeDecomposition</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="pod-module.html#decompose" class="summary-sig-name">decompose</a>(<span class="summary-sig-arg">source</span>,
         <span class="summary-sig-arg">references</span>,
-        <span class="summary-sig-arg">epsilon</span>=<span class="summary-sig-default">1e-10</span>,
+        <span class="summary-sig-arg">epsilon</span>=<span class="summary-sig-default">1e-010</span>,
         <span class="summary-sig-arg">max_iter</span>=<span class="summary-sig-default">20</span>,
         <span class="summary-sig-arg">max_factors</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">max_weight</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">max_weight</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">distance</span>=<span class="summary-sig-default">&lt;function func at 0x00CCFC70&gt;</span>)</span><br />
       Decomposing the source using the proposed reference points.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="pod-pysrc.html#decompose">source&nbsp;code</a></span>
@@ -180,22 +182,6 @@
         </tr>
       </table>
       
-    </td>
-  </tr>
-</table>
-<!-- ==================== VARIABLES ==================== -->
-<a name="section-Variables"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Variables</span></td>
-</tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'pod'"><code class="variable-quote">'</code><code class="variable-string">pod</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 </table>
@@ -208,6 +194,34 @@
     <span class="table-header">Function Details</span></td>
 </tr>
 </table>
+<a name="combined_distance"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">combined_distance</span>(<span class="sig-arg">generator_weight</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pod-pysrc.html#combined_distance">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Distance function used for ordering the projections.</p>
+  <p>A weight of 0.0 defines the distance to the projected point, while a 
+  weight of 1.0 defines the distance relative to the point generating the 
+  line.</p>
+  <p>At each iteration step the current point is projected onto the closest
+  of all lines.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>generator_weight</code></strong> (float usually in range [0.0, 1.0]) - how much weight is assigned to the generator point</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="decompose"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -217,10 +231,11 @@
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">decompose</span>(<span class="sig-arg">source</span>,
         <span class="sig-arg">references</span>,
-        <span class="sig-arg">epsilon</span>=<span class="sig-default">1e-10</span>,
+        <span class="sig-arg">epsilon</span>=<span class="sig-default">1e-010</span>,
         <span class="sig-arg">max_iter</span>=<span class="sig-default">20</span>,
         <span class="sig-arg">max_factors</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">max_weight</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">max_weight</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">distance</span>=<span class="sig-default">&lt;function func at 0x00CCFC70&gt;</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="pod-pysrc.html#decompose">source&nbsp;code</a></span>&nbsp;
@@ -237,6 +252,7 @@
         <li><strong class="pname"><code>max_iter</code></strong> (int) - safeguard for stopping iteration</li>
         <li><strong class="pname"><code>max_factors</code></strong> (int) - limit for the number of reference points, None allowing to use 
           all of them</li>
+        <li><strong class="pname"><code>distance</code></strong> (a function of start point, projected point, generator point) - function used for finding the closest line to project on</li>
     </ul></dd>
     <dt>Returns: IterativeDecomposition</dt>
         <dd>decomposition details</dd>
@@ -275,7 +291,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Jul 29 13:22:52 2011
+    Generated by Epydoc 3.0.1 on Thu Aug 04 16:36:46 2011
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
