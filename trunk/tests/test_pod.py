@@ -76,7 +76,7 @@ class PodTest(unittest.TestCase):
     # target: 2 X first point
     fund = [1.6, 4.0, -2.0]
     #
-    r = pod.L2NormMinDecomposition(indices, max_iter=20)
+    r = pod.BaseDecomposition(indices, max_iter=20)
     result = r.resolve(fund)
     
     logging.debug('result: ' + str(result))
@@ -99,7 +99,7 @@ class PodTest(unittest.TestCase):
     # target: 2 X first point - 1 X last point
     fund = [-3.4, 7.0, -2.4]
     #
-    r = pod.L2NormMinDecomposition(indices, epsilon=1E-10, max_iter=20)
+    r = pod.BaseDecomposition(indices, epsilon=1E-10, max_iter=20)
     result = r.resolve(fund)
     
     logging.debug('result: ' + str(r))
@@ -122,7 +122,7 @@ class PodTest(unittest.TestCase):
     # target: 2 X first point - 1 X last point + noise
     fund = [-3.6, 6.5, -2.7]
     #
-    r = pod.L2NormMinDecomposition(indices, epsilon=1E-6, max_iter=30)
+    r = pod.BaseDecomposition(indices, epsilon=1E-6, max_iter=30)
     replicate = r.resolve(fund)
     
     logging.debug('result: ' + str(r))
@@ -146,7 +146,7 @@ class PodTest(unittest.TestCase):
     # target: 2 X first point - 1 X last point
     fund = [-3.4, 7.0, -2.4]
     #
-    r = pod.L2NormMinDecomposition(indices, epsilon=1E-6, max_iter=30, max_factors=2)
+    r = pod.BaseDecomposition(indices, epsilon=1E-6, max_iter=30, max_factors=2)
     replicate = r.resolve(fund)
     
     logging.debug('result: ' + str(r))

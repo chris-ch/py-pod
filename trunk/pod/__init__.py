@@ -40,6 +40,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 """
+__all__ = ['decompose', 'combined_distance', 'DecompositionBasic']
 
 import os
 import logging
@@ -50,8 +51,34 @@ from util import NullHandler
 _h = NullHandler()
 _logger = logging.getLogger('pod')
 _logger.addHandler(_h)
-
-def decompose(source, references, epsilon=1E-10, max_iter=20, max_factors=None, max_weight=None):
+        
+def combined_distance(generator_weight):
+  """
+  Distance function used for ordering the projections.
+  
+  A weight of 0.0 defines the distance to the projected point, while a weight
+  of 1.0 defines the distance relative to the point generating the line.
+  
+  At each iteration step the current point is projected onto the closest of
+  all lines.
+  
+  @param generator_weight: how much weight is assigned to the generator point
+  @type generator_weight: float usually in range [0.0, 1.0]
+  """
+  
+  def func(start_point, projected_point, 
+                              generator_point, w=generator_weight):
+    d1 = start_point.sub(generator_point).norm()
+    d2 = start_point.sub(projected_point).norm()
+    return w * d1 + (1.0 - w) * d2
+  
+  return func
+  
+def decompose(source, references, 
+      epsilon=1E-10, max_iter=20, 
+      max_factors=None, max_weight=None,
+      distance=combined_distance(0.0)
+      ):
     """
     Decomposing the source using the proposed reference points.
     
@@ -65,10 +92,12 @@ def decompose(source, references, epsilon=1E-10, max_iter=20, max_factors=None, 
     @type max_iter: int
     @param max_factors: limit for the number of reference points, None allowing to use all of them
     @type max_factors: int
+    @param distance: function used for finding the closest line to project on
+    @type distance: a function of start point, projected point, generator point
     @return: decomposition details
     @rtype: IterativeDecomposition
     """
-    r = L2NormMinDecomposition(references, epsilon, max_iter, max_factors, max_weight)
+    r = BaseDecomposition(references, epsilon, max_iter, max_factors, max_weight)
     r.resolve(source)
     return r
 
@@ -167,15 +196,24 @@ class IterativeDecomposition(object):
         out += 'weightings:' + os.linesep
         out += str(self._weights)
         return out
-        
-class L2NormMinDecomposition(IterativeDecomposition):
+  
+class BaseDecomposition(IterativeDecomposition):
     """
-    Replication minimizing L2 norm in the weights space: min sum(|Wi|).
+    Decomposition on a set of reference points.
     """
     
-    def __init__(self, references, epsilon=1E-10, max_iter=20, max_factors=None, max_weight=None):
+    def __init__(self, references, 
+            epsilon=1E-10, 
+            max_iter=20, 
+            max_factors=None,
+            max_weight=None,
+            distance=combined_distance(0.0)):
+        """
+        @param distance: function of start point, projected point and generator point
+        """
         IterativeDecomposition.__init__(self, references, epsilon, max_iter, max_factors)
         self._max_weight = max_weight
+        self._distance = distance
     
     def _project_point(self, point, reference_points):
         """ Projects onto the closest of the straight lines defined by 
@@ -195,7 +233,7 @@ class L2NormMinDecomposition(IterativeDecomposition):
             _logger.debug('computing projection onto ' + str(line))
             ref_proj = line.project(point)
             projections[ref] = ref_proj.projected
-            distances[ref] = ref_proj.projector.norm()
+            distances[ref] = self._distance(point, ref_proj.projected, ref)
             _logger.debug('distance ' + str(distances[ref]))
           
         ref_points = []
@@ -255,6 +293,7 @@ class L2NormMinDecomposition(IterativeDecomposition):
                 # limits number of drivers
                 _logger.debug('count limit reached for drivers: %d' % self._max_factors)
                 reference_points = enabled_drivers
+                
             decomposition = self._compute_decomposition()
             diff = decomposition.sub(previous).norm()
             _logger.debug('improvement: %f' % diff)
@@ -266,8 +305,8 @@ class L2NormMinDecomposition(IterativeDecomposition):
         _logger.debug('diff:' + str(decomposition.sub(target)))
         return decomposition.get_data()
     
-class DecompositionBasic(L2NormMinDecomposition):
+class DecompositionBasic(BaseDecomposition):
   
     def __init__(self, ref1, ref2, max_iter):
-        L2NormMinDecomposition.__init__(self, [ref1, ref2], max_iter=max_iter)
+        BaseDecomposition.__init__(self, [ref1, ref2], max_iter=max_iter)
     
