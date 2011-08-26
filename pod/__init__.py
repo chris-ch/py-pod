@@ -111,21 +111,33 @@ class IterativeDecomposition(object):
         dim = len(references[0])
         for r in references:
             assert len(r) == dim
+            
         self._vector_space = vecspace.VectorSpace(dim)
         self._reference_points = []
-        for r in references:
+        for count, r in enumerate(references):
             ref = self._vector_space.define_point(*r)
-            self._reference_points.append(ref)
+            if ref in self._reference_points:
+                logging.warning('filtered out redundant reference %d' % count)
+                
+            elif ref.norm() == 0.0:
+                logging.warning('filtered out reference at origin %d' % count)
+            
+            else:
+                self._reference_points.append(ref)
+            
         self._weights = dict()
         for p in self._reference_points:
             self._weights[p] = 0.0
+            
         self._epsilon = epsilon
         self._start = None
         self._max_iter = max_iter
         if max_factors is None:
             self._max_factors = len(self._reference_points)
+            
         else:
             self._max_factors = max_factors
+            
         self._error_norm = None
         
     def _compute_decomposition(self):
@@ -225,21 +237,23 @@ class BaseDecomposition(IterativeDecomposition):
             # already matched: do nothing
             return point
           
-        _logger.debug('projecting ' + str(point))      
+        #_logger.debug('projecting ' + str(point))      
         projections = dict()
         distances = dict()
         for ref in reference_points:
+                
             line = self._vector_space.define_line(ref, origin)
-            _logger.debug('computing projection onto ' + str(line))
+            #_logger.debug('computing projection onto ' + str(line))
             ref_proj = line.project(point)
             projections[ref] = ref_proj.projected
             distances[ref] = self._distance(point, ref_proj.projected, ref)
-            _logger.debug('distance ' + str(distances[ref]))
+            _logger.debug('distance to reference %.3f' % distances[ref])
           
         ref_points = []
         for p in reference_points:
             if self._max_weight is None:
                 ref_points.append(p)
+                
             else:
                 additional_weight = projections[p].units(p)
                 suggested_weight = self._weights[p] + additional_weight
@@ -253,6 +267,7 @@ class BaseDecomposition(IterativeDecomposition):
         # finds main driver (shortest distance to ref line)
         def by_dist(ref1, ref2, d=distances):
             return cmp(d[ref1], d[ref2])
+            
         ref_points.sort(by_dist)
         
         closest = ref_points[0]            
@@ -279,7 +294,7 @@ class BaseDecomposition(IterativeDecomposition):
         projector = self._project_point(target, reference_points)
         diff = None
         _logger.debug('distance to projection: %f' % projector.norm())
-        _logger.debug('drivers: ' + str(self._weights))
+        #_logger.debug('drivers: ' + str(self._weights))
         i = 0
         while (diff is None) or (diff > self._epsilon and i < self._max_iter):
             i = i + 1
@@ -298,7 +313,7 @@ class BaseDecomposition(IterativeDecomposition):
             diff = decomposition.sub(previous).norm()
             _logger.debug('improvement: %f' % diff)
             _logger.debug('distance to projection: %f' % projector.norm())
-            _logger.debug('drivers: ' + str(self._weights))
+            #_logger.debug('drivers: ' + str(self._weights))
             _logger.debug('decomposition: ' + str(decomposition))
         
         _logger.debug('start:' + str(target))
