@@ -114,16 +114,18 @@ class IterativeDecomposition(object):
             
         self._vector_space = vecspace.VectorSpace(dim)
         self._reference_points = []
+        self._ignores = []
         for count, r in enumerate(references):
             ref = self._vector_space.define_point(*r)
             if ref in self._reference_points:
                 logging.warning('filtered out redundant reference %d' % count)
+                self._ignores.append(ref)
                 
             elif ref.norm() == 0.0:
                 logging.warning('filtered out reference at origin %d' % count)
+                self._ignores.append(ref)
             
-            else:
-                self._reference_points.append(ref)
+            self._reference_points.append(ref)
             
         self._weights = dict()
         for p in self._reference_points:
@@ -182,7 +184,7 @@ class IterativeDecomposition(object):
         """
         return [self._weights[self._reference_points[i]]
                   for i in range(len(self._reference_points))]
-    
+        
     def get_decomposition(self):
         """
         Returns the result of the decomposition process.
@@ -200,6 +202,38 @@ class IterativeDecomposition(object):
         @rtype: float
         """
         return self._compute_decomposition().sub(self._start).norm()
+    
+    def get_principal_component(self, rank):
+        """
+        Returns the rank-th reference influencing the input variable
+        (main component: rank = 0), multiplied by its assigned weight.
+        
+        @param rank: the rank of the reference (0 means principal component)
+        @return: a reference vector
+        """
+        ref_weights = self.get_reference_weights()
+        sorted_weights = [(pos - 1, weight)
+                                for pos, weight in enumerate(ref_weights)]
+        sorted_weights.sort(lambda w1, w2: cmp(abs(w2[1]), abs(w1[1])))
+        max_abs_weight_pos = sorted_weights[rank][0]
+        weight = sorted_weights[rank][1]
+        main_component = self._reference_points[max_abs_weight_pos].scale(weight)
+        return main_component.get_data()
+        
+    def get_principal_component_index(self, rank):
+        """
+        Returns the position in the initial reference list of the rank-th 
+        reference influencing the input variable (main component: rank = 0).
+        
+        @param rank: the rank of the reference (0 means principal component)
+        @return: position in the initial reference list
+        """
+        ref_weights = self.get_reference_weights()
+        sorted_weights = [(pos - 1, weight)
+                                for pos, weight in enumerate(ref_weights)]
+        sorted_weights.sort(lambda w1, w2: cmp(abs(w2[1]), abs(w1[1])))
+        max_abs_weight_pos = sorted_weights[rank][0]
+        return max_abs_weight_pos
     
     def __repr__(self):
         out = 'reference points:' + os.linesep
@@ -290,7 +324,7 @@ class BaseDecomposition(IterativeDecomposition):
         _logger.debug(' ------------- STARTING PROCESS -------------')
         target = self._vector_space.define_point(*point)
         self._start = target
-        reference_points = self._reference_points
+        reference_points = [ref for ref in self._reference_points if ref not in self._ignores]
         projector = self._project_point(target, reference_points)
         diff = None
         _logger.debug('distance to projection: %f' % projector.norm())
