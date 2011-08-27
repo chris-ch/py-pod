@@ -211,7 +211,7 @@ class PodTest(unittest.TestCase):
     
     return x_axis, y, refs 
   
-  def Xtest_pseudo_fourier_decomposition(self):
+  def test_pseudo_fourier_decomposition(self):
     x_axis, y, refs = self.prepare_fourier(0.0)
     # computes decomposition
     decomposition = pod.decompose(y, refs, epsilon=1E-6, max_iter=20)
@@ -224,7 +224,7 @@ class PodTest(unittest.TestCase):
     self.assertEqual(decomposition.get_principal_component_index(1), 10)
     self.assertEqual(decomposition.get_principal_component_index(2), 15)
 
-  def Xtest_pseudo_fourier_decomposition_shift(self):
+  def test_pseudo_fourier_decomposition_shift(self):
     x_axis, y, refs = self.prepare_fourier(-0.5 * math.pi)
     # computes decomposition
     decomposition = pod.decompose(y, refs, epsilon=1E-6, max_iter=20)
@@ -237,5 +237,15 @@ class PodTest(unittest.TestCase):
     self.assertEqual(decomposition.get_principal_component_index(1), 0)
     self.assertEqual(decomposition.get_principal_component_index(2), 50)
 
+  def test_projection_001(self):
+    """
+    Projecting on a 2D line
+    """
+    p1 = (0.01, 0.02)
+    p = (0.02, 0.03)
+    p_expected = (0.08/5.0, 0.16/5.0)
+    projected = pod.project(p, p1)
+    self.assertEqual(projected, list(p_expected))
+    
 if __name__ == '__main__':
     unittest.main()
