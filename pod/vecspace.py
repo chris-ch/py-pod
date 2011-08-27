@@ -20,9 +20,6 @@ class VectorSpace(object):
     self.dimension = dimension
     self.origin = [0.0] * dimension
     
-  def define_point(self, *coordinates):
-    return coordinates
-    
   def define_line(self, p0):
     sl = StraightLine(p0)
     return sl
