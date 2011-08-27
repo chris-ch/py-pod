@@ -175,7 +175,7 @@ class IterativeDecomposition(object):
         proposed input.
         """
         return [self._weights[self._reference_points[i]]
-                  for i in range(len(self._reference_points))]
+                  for i in xrange(len(self._reference_points))]
         
     def get_decomposition(self):
         """
@@ -278,7 +278,8 @@ class Decomposition(IterativeDecomposition):
             
         reference_points.sort(by_dist)
         
-        closest = reference_points[0]            
+        closest = reference_points[0]
+        
         additional_weight = units(projections[closest], closest)
         self._weights[closest] += additional_weight
         _logger.debug('closest driver: %s, weight=%f' % (str(closest), self._weights[closest]))
