@@ -1,10 +1,6 @@
 """
 Framework for performing a Proper Orthogonal Decomposition (POD).
 
-Useful references:
-  - http://en.wikipedia.org/wiki/Homogeneous_coordinates
-  - http://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations
-
 Usage example:
 
 >>> import pod
@@ -22,23 +18,6 @@ The example above shows the reconstruction of the target using 3 reference
 signals, from which only reference 1 and reference 3 are useful (reference 2
 is assigned a weight of 0).
 
-@author: Christophe Alexandre <ch.alexandre at bluewin dot ch>
-
-@license:
-Copyright(C) 2010 Christophe Alexandre
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 """
 __all__ = ['decompose', 'combined_distance', 'Decomposition']
 
@@ -50,37 +29,12 @@ import vecspace
 
 _logger = logging.getLogger('pod')
 
-def scale(alpha, point):
-  return [(alpha * value) for value in point]
-
-def sum_product(point1, point2):
-  result = 0.0
-  for index, value1 in enumerate(point1):
-    result += value1 * point2[index]
-  return result
-
-def vsub(point1, point2):
-  return [(v1 - v2) for v1, v2 in zip(point1, point2)]
-
-def vadd(point1, point2):
-  return [(v1 + v2) for v1, v2 in zip(point1, point2)]
-
-def norm(point):
-  return math.sqrt(sum_product(point, point))
-
-def units(point, unit_vector):
-    """
-    How many times a point fits in the specified units (in norm).
-    
-    The sign has a meaning only if both vectors are colinear.
-    """
-    ratio = norm(point) / norm(unit_vector)
-    if norm(vsub(point, unit_vector)) > norm(unit_vector):
-      # vectors are in opposite directions
-      ratio = -ratio
-      
-    return ratio
-  
+from mathtools import vadd
+from mathtools import vsub
+from mathtools import sum_product
+from mathtools import scale
+from mathtools import norm
+from mathtools import units
 
 def combined_distance(generator_weight):
   """
@@ -145,8 +99,7 @@ class IterativeDecomposition(object):
         self._vector_space = vecspace.VectorSpace(dim)
         self._reference_points = []
         self._ignores = []
-        for count, r in enumerate(references):
-            ref = self._vector_space.define_point(*r)
+        for count, ref in enumerate(references):
             if ref in self._reference_points:
                 logging.warning('filtered out redundant reference %d' % count)
                 self._ignores.append(ref)
@@ -339,7 +292,7 @@ class Decomposition(IterativeDecomposition):
         """
         IterativeDecomposition.resolve(self, point)
         _logger.debug(' ------------- STARTING PROCESS -------------')
-        target = self._vector_space.define_point(*point)
+        target = point
         self._start = target
         reference_points = [ref for ref in self._reference_points if ref not in self._ignores]
         projector = self._project_point(target, reference_points)

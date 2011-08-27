@@ -16,3 +16,17 @@ def vadd(point1, point2):
 
 def vsub(point1, point2):
   return [(v1 - v2) for v1, v2 in zip(point1, point2)]
+
+def units(point, unit_vector):
+    """
+    How many times a vector fits in the specified units (in norm).
+    
+    The sign has a meaning only if both vectors are colinear.
+    """
+    ratio = norm(point) / norm(unit_vector)
+    if norm(vsub(point, unit_vector)) > norm(unit_vector):
+      # vectors are in opposite directions
+      ratio = -ratio
+      
+    return ratio
+  
