@@ -1,32 +1,14 @@
 """
-Toolbox for handling projections onto linear varieties.
-
-@author: Christophe Alexandre <ch.alexandre at bluewin dot ch>
-
-@license:
-Copyright(C) 2010 Christophe Alexandre
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>.
+Toolbox for projecting onto straight lines.
 """
 import logging
 
-import linalg
-import util
-
-_h = util.NullHandler()
 _logger = logging.getLogger('vecspace')
-_logger.addHandler(_h)
+
+from mathtools import vadd
+from mathtools import vsub
+from mathtools import sum_product
+from mathtools import scale
 
 class VectorSpace(object):
   """
@@ -36,10 +18,10 @@ class VectorSpace(object):
   """  
   def __init__(self, dimension, basis=None):
     self.dimension = dimension
-    self.origin = linalg.zero(dimension)
+    self.origin = [0.0] * dimension
     
   def define_point(self, *coordinates):
-    return linalg.Point(*coordinates)
+    return coordinates
     
   def define_line(self, p0):
     sl = StraightLine(p0)
@@ -59,8 +41,8 @@ class StraightLine(object):
     Generalizing projection onto induced subspace.
     """
     subspace = VectorSubspace(self.point)
-    proj = subspace.project(point.sub(self.point))
-    proj.projected = proj.projected.add(self.point)
+    proj = subspace.project(vsub(point, self.point))
+    proj.projected = vadd(proj.projected, self.point)
     return proj
     
   def __repr__(self):
@@ -84,21 +66,21 @@ class VectorSubspace(object):
     with x* = sum( alpha[i] * y[i] )
     and y[i]: points generating the subspace.
     """
-    space_dim = point.get_length()
+    space_dim = len(point)
     
     _logger.debug('space_dim: %s' % space_dim)
     
-    m_value = self.def_point.product(self.def_point)
+    m_value = sum_product(self.def_point, self.def_point)
     
-    b_value = point.product(self.def_point)
+    b_value = sum_product(point, self.def_point)
     
     alpha = b_value / m_value
     
-    result = linalg.zero(space_dim)
+    result = [0.0] * space_dim
     _logger.debug('result spaceholder: %s' % result)
     
-    component = self.def_point.scale(alpha)
-    result = result.add(component)
+    component = scale(alpha, self.def_point)
+    result = vadd(result, component)
     
     return Projection(result, point)
     
@@ -109,6 +91,6 @@ class Projection(object):
   def __init__(self, projected, start):
     self.projected = projected
     self.start = start
-    self.projector = projected.sub(start)
+    self.projector = vsub(projected, start)
     
     

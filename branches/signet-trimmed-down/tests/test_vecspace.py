@@ -38,7 +38,7 @@ class VecSpaceTest(unittest.TestCase):
     p_expected = space.define_point(0.08/5.0, 0.16/5.0)
     line = space.define_line(p1)
     proj = line.project(p)
-    self.assertEqual(proj.projected, p_expected)
+    self.assertEqual(proj.projected, list(p_expected))
     
 if __name__ == '__main__':
     unittest.main()

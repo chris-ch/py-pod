@@ -42,15 +42,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 """
 __all__ = ['decompose', 'combined_distance', 'Decomposition']
 
-import os
+import math
 import logging
+import os
 
 import vecspace
-from util import NullHandler
 
-_h = NullHandler()
 _logger = logging.getLogger('pod')
-_logger.addHandler(_h)      
+
+def scale(alpha, point):
+  return [(alpha * value) for value in point]
+
+def sum_product(point1, point2):
+  result = 0.0
+  for index, value1 in enumerate(point1):
+    result += value1 * point2[index]
+  return result
+
+def vsub(point1, point2):
+  return [(v1 - v2) for v1, v2 in zip(point1, point2)]
+
+def vadd(point1, point2):
+  return [(v1 + v2) for v1, v2 in zip(point1, point2)]
+
+def norm(point):
+  return math.sqrt(sum_product(point, point))
+
+def units(point, unit_vector):
+    """
+    How many times a point fits in the specified units (in norm).
+    
+    The sign has a meaning only if both vectors are colinear.
+    """
+    ratio = norm(point) / norm(unit_vector)
+    if norm(vsub(point, unit_vector)) > norm(unit_vector):
+      # vectors are in opposite directions
+      ratio = -ratio
+      
+    return ratio
+  
 
 def combined_distance(generator_weight):
   """
@@ -68,8 +98,8 @@ def combined_distance(generator_weight):
   
   def func(start_point, projected_point, 
                               generator_point, w=generator_weight):
-    d1 = start_point.sub(generator_point).norm()
-    d2 = start_point.sub(projected_point).norm()
+    d1 = norm(vsub(start_point, generator_point))
+    d2 = norm(vsub(start_point, projected_point))
     return w * d1 + (1.0 - w) * d2
   
   return func
@@ -121,7 +151,7 @@ class IterativeDecomposition(object):
                 logging.warning('filtered out redundant reference %d' % count)
                 self._ignores.append(ref)
                 
-            elif ref.norm() == 0.0:
+            elif norm(ref) == 0.0:
                 logging.warning('filtered out reference at origin %d' % count)
                 self._ignores.append(ref)
             
@@ -152,7 +182,7 @@ class IterativeDecomposition(object):
         decomposition = self._vector_space.origin
         for d in self._weights.keys():
             w_d = self._weights[d]
-            decomposition = decomposition.add(d.scale(w_d))
+            decomposition = vadd(decomposition, scale(w_d, d))
         return decomposition
       
     def resolve(self, point):
@@ -192,7 +222,7 @@ class IterativeDecomposition(object):
         @return: decomposition result
         @rtype: list
         """
-        return self._compute_decomposition().get_data()
+        return self._compute_decomposition()
     
     def get_error_norm(self):
         """
@@ -201,7 +231,7 @@ class IterativeDecomposition(object):
         @return: length of the difference between the result and the initial point
         @rtype: float
         """
-        return self._compute_decomposition().sub(self._start).norm()
+        return norm(vsub(self._compute_decomposition(), self._start))
     
     def get_principal_component(self, rank):
         """
@@ -217,8 +247,8 @@ class IterativeDecomposition(object):
         sorted_weights.sort(lambda w1, w2: cmp(abs(w2[1]), abs(w1[1])))
         max_abs_weight_pos = sorted_weights[rank][0]
         weight = sorted_weights[rank][1]
-        main_component = self._reference_points[max_abs_weight_pos].scale(weight)
-        return main_component.get_data()
+        main_component = scale(weight, self._reference_points[max_abs_weight_pos])
+        return main_component
         
     def get_principal_component_index(self, rank):
         """
@@ -265,7 +295,7 @@ class Decomposition(IterativeDecomposition):
         """
         # computes projection of source point to each subspace defined by ref points
         origin = self._vector_space.origin
-        if point.sub(origin).norm() <= self._epsilon:
+        if norm(vsub(point, origin)) <= self._epsilon:
             # already matched: do nothing
             return point
           
@@ -292,11 +322,11 @@ class Decomposition(IterativeDecomposition):
         reference_points.sort(by_dist)
         
         closest = reference_points[0]            
-        additional_weight = projections[closest].units(closest)
+        additional_weight = units(projections[closest], closest)
         self._weights[closest] += additional_weight
         _logger.debug('closest driver: %s, weight=%f' % (str(closest), self._weights[closest]))
         
-        return point.sub(projections[closest])
+        return vsub(point, projections[closest])
     
     def resolve(self, point):
         """
@@ -314,7 +344,7 @@ class Decomposition(IterativeDecomposition):
         reference_points = [ref for ref in self._reference_points if ref not in self._ignores]
         projector = self._project_point(target, reference_points)
         diff = None
-        _logger.debug('distance to projection: %f' % projector.norm())
+        _logger.debug('distance to projection: %f' % norm(projector))
         #_logger.debug('drivers: ' + str(self._weights))
         i = 0
         while (diff is None) or (diff > self._epsilon and i < self._max_iter):
@@ -331,13 +361,13 @@ class Decomposition(IterativeDecomposition):
                 reference_points = enabled_drivers
                 
             decomposition = self._compute_decomposition()
-            diff = decomposition.sub(previous).norm()
+            diff = norm(vsub(decomposition, previous))
             _logger.debug('improvement: %f' % diff)
-            _logger.debug('distance to projection: %f' % projector.norm())
+            _logger.debug('distance to projection: %f' % norm(projector))
             #_logger.debug('drivers: ' + str(self._weights))
             _logger.debug('decomposition: ' + str(decomposition))
         
         _logger.debug('start:' + str(target))
-        _logger.debug('diff:' + str(decomposition.sub(target)))
-        return decomposition.get_data()
+        _logger.debug('diff:' + str(vsub(decomposition, target)))
+        return decomposition
 
