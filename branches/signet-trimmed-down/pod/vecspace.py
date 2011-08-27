@@ -10,20 +10,6 @@ from mathtools import vsub
 from mathtools import sum_product
 from mathtools import scale
 
-class VectorSpace(object):
-  """
-  Essentially a factory for geometrical objects.
-  
-  Joining an origin to a linear variety would create a VectorSpace.
-  """  
-  def __init__(self, dimension, basis=None):
-    self.dimension = dimension
-    self.origin = [0.0] * dimension
-    
-  def define_line(self, p0):
-    sl = StraightLine(p0)
-    return sl
-
 class StraightLine(object):
   """
   """
@@ -35,7 +21,6 @@ class StraightLine(object):
     
   def project(self, point):
     """
-    Generalizing projection onto induced subspace.
     """
     subspace = VectorSubspace(self.point)
     proj = subspace.project(vsub(point, self.point))
@@ -59,27 +44,15 @@ class VectorSubspace(object):
 
   def project(self, point):
     """
-    The solution implies (x - x*) perpendicular to each y[i]
-    with x* = sum( alpha[i] * y[i] )
-    and y[i]: points generating the subspace.
     """
-    space_dim = len(point)
-    
-    _logger.debug('space_dim: %s' % space_dim)
     
     m_value = sum_product(self.def_point, self.def_point)
-    
     b_value = sum_product(point, self.def_point)
-    
     alpha = b_value / m_value
     
-    result = [0.0] * space_dim
-    _logger.debug('result spaceholder: %s' % result)
-    
     component = scale(alpha, self.def_point)
-    result = vadd(result, component)
     
-    return Projection(result, point)
+    return Projection(component, point)
     
 class Projection(object):
   """

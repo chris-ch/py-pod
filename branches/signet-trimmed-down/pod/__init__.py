@@ -95,11 +95,13 @@ class IterativeDecomposition(object):
         dim = len(references[0])
         for r in references:
             assert len(r) == dim
-            
-        self._vector_space = vecspace.VectorSpace(dim)
+        
+        self._dimension = dim
+        
         self._reference_points = []
         self._ignores = []
-        for count, ref in enumerate(references):
+        for count, r in enumerate(references):
+            ref = tuple(r)
             if ref in self._reference_points:
                 logging.warning('filtered out redundant reference %d' % count)
                 self._ignores.append(ref)
@@ -132,7 +134,7 @@ class IterativeDecomposition(object):
         @return: the current relicate
         @rtype: linalg.Point
         """
-        decomposition = self._vector_space.origin
+        decomposition = [0.0] * self._dimension
         for d in self._weights.keys():
             w_d = self._weights[d]
             decomposition = vadd(decomposition, scale(w_d, d))
@@ -247,7 +249,7 @@ class Decomposition(IterativeDecomposition):
         the reference points.
         """
         # computes projection of source point to each subspace defined by ref points
-        origin = self._vector_space.origin
+        origin = [0.0] * self._dimension
         if norm(vsub(point, origin)) <= self._epsilon:
             # already matched: do nothing
             return point
@@ -257,7 +259,7 @@ class Decomposition(IterativeDecomposition):
         distances = dict()
         for ref in reference_points:
                 
-            line = self._vector_space.define_line(ref)
+            line = vecspace.StraightLine(ref)
             #_logger.debug('computing projection onto ' + str(line))
             ref_proj = line.project(point)
             projections[ref] = ref_proj.projected
@@ -292,7 +294,7 @@ class Decomposition(IterativeDecomposition):
         """
         IterativeDecomposition.resolve(self, point)
         _logger.debug(' ------------- STARTING PROCESS -------------')
-        target = point
+        target = tuple(point)
         self._start = target
         reference_points = [ref for ref in self._reference_points if ref not in self._ignores]
         projector = self._project_point(target, reference_points)
