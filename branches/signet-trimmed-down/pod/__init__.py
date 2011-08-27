@@ -40,7 +40,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 """
-__all__ = ['decompose', 'combined_distance', 'DecompositionBasic']
+__all__ = ['decompose', 'combined_distance', 'Decomposition']
 
 import os
 import logging
@@ -50,8 +50,8 @@ from util import NullHandler
 
 _h = NullHandler()
 _logger = logging.getLogger('pod')
-_logger.addHandler(_h)
-        
+_logger.addHandler(_h)      
+
 def combined_distance(generator_weight):
   """
   Distance function used for ordering the projections.
@@ -76,7 +76,7 @@ def combined_distance(generator_weight):
   
 def decompose(source, references, 
       epsilon=1E-10, max_iter=20, 
-      max_factors=None, max_weight=None,
+      max_factors=None,
       distance=combined_distance(0.0)
       ):
     """
@@ -97,7 +97,7 @@ def decompose(source, references,
     @return: decomposition details
     @rtype: IterativeDecomposition
     """
-    r = BaseDecomposition(references, epsilon, max_iter, max_factors, max_weight)
+    r = Decomposition(references, epsilon, max_iter, max_factors)
     r.resolve(source)
     return r
 
@@ -243,7 +243,7 @@ class IterativeDecomposition(object):
         out += str(self._weights)
         return out
   
-class BaseDecomposition(IterativeDecomposition):
+class Decomposition(IterativeDecomposition):
     """
     Decomposition on a set of reference points.
     """
@@ -252,13 +252,11 @@ class BaseDecomposition(IterativeDecomposition):
             epsilon=1E-10, 
             max_iter=20, 
             max_factors=None,
-            max_weight=None,
             distance=combined_distance(0.0)):
         """
         @param distance: function of start point, projected point and generator point
         """
         IterativeDecomposition.__init__(self, references, epsilon, max_iter, max_factors)
-        self._max_weight = max_weight
         self._distance = distance
     
     def _project_point(self, point, reference_points):
@@ -276,25 +274,14 @@ class BaseDecomposition(IterativeDecomposition):
         distances = dict()
         for ref in reference_points:
                 
-            line = self._vector_space.define_line(ref, origin)
+            line = self._vector_space.define_line(ref)
             #_logger.debug('computing projection onto ' + str(line))
             ref_proj = line.project(point)
             projections[ref] = ref_proj.projected
             distances[ref] = self._distance(point, ref_proj.projected, ref)
             _logger.debug('distance to reference %.3f' % distances[ref])
-          
-        ref_points = []
-        for p in reference_points:
-            if self._max_weight is None:
-                ref_points.append(p)
                 
-            else:
-                additional_weight = projections[p].units(p)
-                suggested_weight = self._weights[p] + additional_weight
-                if abs(suggested_weight) < self._max_weight:
-                    ref_points.append(p)
-                
-        if len(ref_points) == 0:
+        if len(reference_points) == 0:
             # no eligible point left
             return point
         
@@ -302,9 +289,9 @@ class BaseDecomposition(IterativeDecomposition):
         def by_dist(ref1, ref2, d=distances):
             return cmp(d[ref1], d[ref2])
             
-        ref_points.sort(by_dist)
+        reference_points.sort(by_dist)
         
-        closest = ref_points[0]            
+        closest = reference_points[0]            
         additional_weight = projections[closest].units(closest)
         self._weights[closest] += additional_weight
         _logger.debug('closest driver: %s, weight=%f' % (str(closest), self._weights[closest]))
@@ -353,9 +340,4 @@ class BaseDecomposition(IterativeDecomposition):
         _logger.debug('start:' + str(target))
         _logger.debug('diff:' + str(decomposition.sub(target)))
         return decomposition.get_data()
-    
-class DecompositionBasic(BaseDecomposition):
-  
-    def __init__(self, ref1, ref2, max_iter):
-        BaseDecomposition.__init__(self, [ref1, ref2], max_iter=max_iter)
-    
+
