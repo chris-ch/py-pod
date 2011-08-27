@@ -25,8 +25,6 @@ import math
 import logging
 import os
 
-import vecspace
-
 _logger = logging.getLogger('pod')
 
 from mathtools import vadd
@@ -36,6 +34,15 @@ from mathtools import scale
 from mathtools import norm
 from mathtools import units
 
+def project(point, def_point):
+  """
+  """
+  denom = sum_product(def_point, def_point)
+  num = sum_product(vsub(point, def_point), def_point)    
+  component = scale(num / denom, def_point)
+  proj = vadd(component, def_point)
+  return proj
+  
 def combined_distance(generator_weight):
   """
   Distance function used for ordering the projections.
@@ -253,17 +260,12 @@ class Decomposition(IterativeDecomposition):
         if norm(vsub(point, origin)) <= self._epsilon:
             # already matched: do nothing
             return point
-          
-        #_logger.debug('projecting ' + str(point))      
+            
         projections = dict()
         distances = dict()
         for ref in reference_points:
-                
-            line = vecspace.StraightLine(ref)
-            #_logger.debug('computing projection onto ' + str(line))
-            ref_proj = line.project(point)
-            projections[ref] = ref_proj.projected
-            distances[ref] = self._distance(point, ref_proj.projected, ref)
+            projections[ref] = project(point, ref)
+            distances[ref] = self._distance(point, projections[ref], ref)
             _logger.debug('distance to reference %.3f' % distances[ref])
                 
         if len(reference_points) == 0:
