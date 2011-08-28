@@ -33,17 +33,8 @@ from mathtools import sum_product
 from mathtools import scale
 from mathtools import norm
 from mathtools import units
+from mathtools import project
 
-def project(point, def_point):
-  """
-  Projects a point onto the 1-dim subspace defined by def_point.
-  """
-  denom = sum_product(def_point, def_point)
-  num = sum_product(vsub(point, def_point), def_point)    
-  component = scale(num / denom, def_point)
-  projected = vadd(component, def_point)
-  return projected
-  
 def combined_distance(generator_weight):
   """
   Distance function used for ordering the projections.
@@ -221,7 +212,7 @@ class ComponentAnalysis(object):
             diff = norm(vsub(replicate, previous))
             _logger.info('replication improvement after iteration: %f' % diff)
             step = step + 1
-            if diff <= self._epsilon or step >= self._max_iter:
+            if diff <= self._epsilon or step > self._max_iter:
                 break
         
         _logger.info('diff: %.03f' % diff)
