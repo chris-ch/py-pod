@@ -37,3 +37,13 @@ def units(point, unit_vector):
     
   return ratio
   
+def project(point, def_point):
+  """
+  Projects a point onto the 1-dim subspace defined by def_point.
+  """
+  denom = sum_product(def_point, def_point)
+  num = sum_product(vsub(point, def_point), def_point)    
+  component = scale(num / denom, def_point)
+  projected = vadd(component, def_point)
+  return projected
+  
