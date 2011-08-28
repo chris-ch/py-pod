@@ -212,10 +212,13 @@ class ComponentAnalysis(object):
             diff = norm(vsub(replicate, previous))
             _logger.info('replication improvement after iteration: %.03f' % diff)
             step = step + 1
-            if diff <= self._epsilon or step > self._max_iter:
+            if diff <= self._epsilon:
+                break
+            
+            if step > self._max_iter:
+                _logger.info('iteration count limit reached')
                 break
         
-        _logger.info('diff: %.03f' % diff)
         _logger.info('remainder length: %.03f' % norm(vsub(replicate, self._start)))
         return replicate
 

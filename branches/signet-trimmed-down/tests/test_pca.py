@@ -2,15 +2,19 @@
 Test cases for the pca package.
 """
 
+import logging
 import unittest
 import math
-import logging
+import random
 from decimal import Decimal
 
 import pca
 
 logging.basicConfig(level=logging.INFO)
 
+def random_series_normal(samples_count, mu=1.0, sigma=1.0):
+  return [func(mu, sigma) for func in [random.gauss] * samples_count]
+    
 def prepare_fourier(shift):
   N_REF = 30
   SAMPLING = 5 * N_REF
@@ -248,6 +252,16 @@ class TestPCA(unittest.TestCase):
     self.assertEqual(decomposition.get_component_index(1), 0)
     self.assertEqual(decomposition.get_component_index(2), 50)
 
+  def test_big_set(self):
+    samples_count = 10
+    indices_count = 1000
+    indices = [func(samples_count, mu=1.0, sigma=1.0) for func in [random_series_normal] * indices_count]
+    asset = random_series_normal(samples_count, mu=1.0, sigma=1.0)
+    replication = pca.find_components(asset, indices, epsilon=1E-6, max_iter=100, max_factors=5)
+    contributions = [(index, weight) 
+                      for index, weight in enumerate(replication.get_weightings())
+                      if weight != 0.0]
+    self.assert_(len(contributions) <= 5)
     
 if __name__ == '__main__':
     unittest.main()
