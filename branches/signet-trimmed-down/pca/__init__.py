@@ -1,9 +1,9 @@
 """
-Framework for performing a Proper Orthogonal ComponentAnalysis (POD).
+Framework for finding the main drivers of a system.
 
 Usage example:
 
->>> import pod
+>>> import pca
 >>> refs = [ [-4.0, -1.0],
 >>>          [-2.0, -1.0],
 >>>          [3.0, 4.0] ]
@@ -171,7 +171,6 @@ class ComponentAnalysis(object):
             return cmp(d[ref1], d[ref2])
             
         reference_points.sort(by_dist)
-        
         closest = reference_points[0]
         
         additional_weight = units(projections[closest], closest)
