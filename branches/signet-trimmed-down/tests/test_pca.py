@@ -9,7 +9,7 @@ from decimal import Decimal
 
 import pca
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 def prepare_fourier(shift):
   N_REF = 30
@@ -83,7 +83,7 @@ class TestPCA(unittest.TestCase):
     index2 = [1.2, -0.5]
     fund = [1.0, 0.5]
     r = pca.ComponentAnalysis([index1, index2], max_iter=20)
-    replicate = r.resolve(fund)
+    replicate = r.solve(fund)
         
     logging.debug('result: ' + str(r))
     s_expected = [1.0, 0.5]
@@ -99,7 +99,7 @@ class TestPCA(unittest.TestCase):
     index2 = [1.2, -0.5, -1.0]
     fund = [1.0, 0.5, 3.0]
     r = pca.ComponentAnalysis([index1, index2], max_iter=40)
-    replicate = r.resolve(fund)
+    replicate = r.solve(fund)
     
     logging.debug('result: ' + str(r))
     s_expected = [-0.265192, -0.961998, 2.2127700]
@@ -122,7 +122,7 @@ class TestPCA(unittest.TestCase):
     fund = [1.6, 4.0, -2.0]
     #
     r = pca.ComponentAnalysis(indices, max_iter=20)
-    result = r.resolve(fund)
+    result = r.solve(fund)
     
     logging.debug('result: ' + str(result))
     s_expected = [1.6, 4.0, -2.0]
@@ -145,7 +145,7 @@ class TestPCA(unittest.TestCase):
     fund = [-3.4, 7.0, -2.4]
     #
     r = pca.ComponentAnalysis(indices, epsilon=1E-10, max_iter=20)
-    result = r.resolve(fund)
+    result = r.solve(fund)
     
     logging.debug('result: ' + str(r))
     s_expected = [-3.4, 7.0, -2.4]
@@ -168,7 +168,7 @@ class TestPCA(unittest.TestCase):
     fund = [-3.6, 6.5, -2.7]
     #
     r = pca.ComponentAnalysis(indices, epsilon=1E-6, max_iter=30)
-    replicate = r.resolve(fund)
+    replicate = r.solve(fund)
     
     logging.debug('result: ' + str(r))
     s_expected = [-3.6, 6.5, -2.7]
@@ -192,7 +192,7 @@ class TestPCA(unittest.TestCase):
     fund = [-3.4, 7.0, -2.4]
     #
     r = pca.ComponentAnalysis(indices, epsilon=1E-6, max_iter=30, max_factors=2)
-    replicate = r.resolve(fund)
+    replicate = r.solve(fund)
     
     logging.debug('result: ' + str(r))
     s_expected = [-3.42444, 6.940277, -2.530706]
@@ -216,9 +216,10 @@ class TestPCA(unittest.TestCase):
     s_expected = [-2.0, 1.5]
     for i in range(len(s_expected)):
       self.assertAlmostEqual(replicate[i], s_expected[i], 3)
-    self.assertAlmostEqual(replication.get_weighting(0), 0.961538, 4)
-    self.assertAlmostEqual(replication.get_weighting(1), 0.0, 4)
-    self.assertAlmostEqual(replication.get_weighting(2), 0.61538, 4)
+      
+    self.assertAlmostEqual(replication.get_weightings()[0], 0.961538, 4)
+    self.assertAlmostEqual(replication.get_weightings()[1], 0.0, 4)
+    self.assertAlmostEqual(replication.get_weightings()[2], 0.61538, 4)
     self.assertAlmostEqual(replication.get_error_norm(), 0.0, 4)
     
   def test_pseudo_fourier_decomposition(self):
