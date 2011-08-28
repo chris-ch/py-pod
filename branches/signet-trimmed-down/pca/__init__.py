@@ -1,5 +1,5 @@
 """
-Framework for performing a Proper Orthogonal Decomposition (POD).
+Framework for performing a Proper Orthogonal ComponentAnalysis (POD).
 
 Usage example:
 
@@ -8,10 +8,10 @@ Usage example:
 >>>          [-2.0, -1.0],
 >>>          [3.0, 4.0] ]
 >>> target = [-2.0, 1.5]
->>> decomposition = pod.decompose(target, refs, epsilon=1E-6, max_iter=90)
->>> print decomposition.get_decomposition()
+>>> decomposition = pod.find_components(target, refs, epsilon=1E-6, max_iter=90)
+>>> print decomposition.get_replicate()
 [-1.9999991745134178, 1.4999993808850638]
->>> print decomposition.get_reference_weights()
+>>> print decomposition.get_weightings()
 [0.96153806466991254, 0.0, 0.61538436138874408]
 
 The example above shows the reconstruction of the target using 3 reference
@@ -19,7 +19,7 @@ signals, from which only reference 1 and reference 3 are useful (reference 2
 is assigned a weight of 0).
 
 """
-__all__ = ['decompose', 'combined_distance', 'Decomposition']
+__all__ = ['find_components', 'combined_distance', 'ComponentAnalysis']
 
 import math
 import logging
@@ -65,7 +65,7 @@ def combined_distance(generator_weight):
   
   return func
   
-def decompose(source, references, 
+def find_components(source, references, 
       epsilon=1E-10, max_iter=20, 
       max_factors=None,
       distance=combined_distance(0.0)
@@ -86,23 +86,30 @@ def decompose(source, references,
     @param distance: function used for finding the closest line to project on
     @type distance: a function of start point, projected point, generator point
     @return: decomposition details
-    @rtype: IterativeDecomposition
+    @rtype: IterativeComponentAnalysis
     """
-    r = Decomposition(references, epsilon, max_iter, max_factors)
+    r = ComponentAnalysis(references, epsilon, max_iter, max_factors)
     r.resolve(source)
     return r
 
-class IterativeDecomposition(object):
+class ComponentAnalysis(object):
     """
-    Decomposition interface definition.
+    ComponentAnalysis interface definition.
     """
     
-    def __init__(self, references, epsilon=1E-10, max_iter=20, max_factors=None):
+    def __init__(self, references, epsilon=1E-10, max_iter=20, max_factors=None,
+            distance=combined_distance(0.0)):
+        """
+        @param distance: function of start point, projected point and generator point
+        """
+        
+        # basic consistency checks
         assert len(references) > 0, 'at least one reference is required'
         dim = len(references[0])
         for r in references:
-            assert len(r) == dim
+            assert len(r) == dim, 'all points have to be of the same dimension'
         
+        self._distance = distance
         self._dimension = dim
         
         self._reference_points = []
@@ -134,7 +141,7 @@ class IterativeDecomposition(object):
             
         self._error_norm = None
         
-    def _compute_decomposition(self):
+    def _compute_replicate(self):
         """
         Computes current decomposition result on the fly.
         
@@ -146,19 +153,8 @@ class IterativeDecomposition(object):
             w_d = self._weights[d]
             decomposition = vadd(decomposition, scale(w_d, d))
         return decomposition
-      
-    def resolve(self, point):
-        """
-        Iterates decomposition until convergence or max iteration is reached.
-        
-        @param point: coordinates of the point to be decompositiond
-        @type point: list
-        @return: coordinates of decompositiond point
-        @rtype: list
-        """
-        pass
     
-    def get_reference_weight(self, position):
+    def get_weighting(self, position):
         """
         Returns the weight assigned to the reference provided in the constructor
         at the indicated position.
@@ -169,22 +165,22 @@ class IterativeDecomposition(object):
         ref = self._reference_points[position]
         return self._weights[ref]
         
-    def get_reference_weights(self):
+    def get_weightings(self):
         """
         Returns the weights assigned to the references in order to construct the
-        proposed input.
+        suggested input.
         """
         return [self._weights[self._reference_points[i]]
                   for i in xrange(len(self._reference_points))]
         
-    def get_decomposition(self):
+    def get_replicate(self):
         """
         Returns the result of the decomposition process.
         
         @return: decomposition result
         @rtype: list
         """
-        return self._compute_decomposition()
+        return self._compute_replicate()
     
     def get_error_norm(self):
         """
@@ -193,9 +189,9 @@ class IterativeDecomposition(object):
         @return: length of the difference between the result and the initial point
         @rtype: float
         """
-        return norm(vsub(self._compute_decomposition(), self._start))
+        return norm(vsub(self._compute_replicate(), self._start))
     
-    def get_principal_component(self, rank):
+    def get_component(self, rank):
         """
         Returns the rank-th reference influencing the input variable
         (main component: rank = 0), multiplied by its assigned weight.
@@ -203,7 +199,7 @@ class IterativeDecomposition(object):
         @param rank: the rank of the reference (0 means principal component)
         @return: a reference vector
         """
-        ref_weights = self.get_reference_weights()
+        ref_weights = self.get_weightings()
         sorted_weights = [(pos - 1, weight)
                                 for pos, weight in enumerate(ref_weights)]
         sorted_weights.sort(lambda w1, w2: cmp(abs(w2[1]), abs(w1[1])))
@@ -212,7 +208,7 @@ class IterativeDecomposition(object):
         main_component = scale(weight, self._reference_points[max_abs_weight_pos])
         return main_component
         
-    def get_principal_component_index(self, rank):
+    def get_component_index(self, rank):
         """
         Returns the position in the initial reference list of the rank-th 
         reference influencing the input variable (main component: rank = 0).
@@ -220,42 +216,19 @@ class IterativeDecomposition(object):
         @param rank: the rank of the reference (0 means principal component)
         @return: position in the initial reference list
         """
-        ref_weights = self.get_reference_weights()
+        ref_weights = self.get_weightings()
         sorted_weights = [(pos - 1, weight)
                                 for pos, weight in enumerate(ref_weights)]
         sorted_weights.sort(lambda w1, w2: cmp(abs(w2[1]), abs(w1[1])))
         max_abs_weight_pos = sorted_weights[rank][0]
         return max_abs_weight_pos
     
-    def __repr__(self):
-        out = 'reference points:' + os.linesep
-        for p in self._reference_points:
-            out += str(p) + os.linesep
-        out += 'weightings:' + os.linesep
-        out += str(self._weights)
-        return out
-  
-class Decomposition(IterativeDecomposition):
-    """
-    Decomposition on a set of reference points.
-    """
-    
-    def __init__(self, references, 
-            epsilon=1E-10, 
-            max_iter=20, 
-            max_factors=None,
-            distance=combined_distance(0.0)):
-        """
-        @param distance: function of start point, projected point and generator point
-        """
-        IterativeDecomposition.__init__(self, references, epsilon, max_iter, max_factors)
-        self._distance = distance
-    
     def _project_point(self, point, reference_points):
         """ Projects onto the closest of the straight lines defined by 
         the reference points.
         """
-        # computes projection of source point to each subspace defined by ref points
+        # computes projection of source point onto the subspaces
+        # defined by each ref point
         origin = [0.0] * self._dimension
         if norm(vsub(point, origin)) <= self._epsilon:
             # already matched: do nothing
@@ -292,10 +265,9 @@ class Decomposition(IterativeDecomposition):
         
         @param point: coordinates of the point to be decompositiond
         @type point: list
-        @return: coordinates of decompositiond point
+        @return: coordinates of decomposition point
         @rtype: list
         """
-        IterativeDecomposition.resolve(self, point)
         _logger.debug(' ------------- STARTING PROCESS -------------')
         target = tuple(point)
         self._start = target
@@ -303,11 +275,10 @@ class Decomposition(IterativeDecomposition):
         projector = self._project_point(target, reference_points)
         diff = None
         _logger.debug('distance to projection: %f' % norm(projector))
-        #_logger.debug('drivers: ' + str(self._weights))
         i = 0
         while (diff is None) or (diff > self._epsilon and i < self._max_iter):
             i = i + 1
-            previous = self._compute_decomposition()
+            previous = self._compute_replicate()
             _logger.debug(' ------------- ITERATION %d -------------' % i)
             projector = self._project_point(projector, reference_points)
             enabled_drivers = [p for p in self._weights.keys() if abs(self._weights[p]) > 0.0]
@@ -318,14 +289,20 @@ class Decomposition(IterativeDecomposition):
                 _logger.debug('count limit reached for drivers: %d' % self._max_factors)
                 reference_points = enabled_drivers
                 
-            decomposition = self._compute_decomposition()
+            decomposition = self._compute_replicate()
             diff = norm(vsub(decomposition, previous))
             _logger.debug('improvement: %f' % diff)
             _logger.debug('distance to projection: %f' % norm(projector))
-            #_logger.debug('drivers: ' + str(self._weights))
-            _logger.debug('decomposition: ' + str(decomposition))
         
         _logger.debug('start:' + str(target))
         _logger.debug('diff:' + str(vsub(decomposition, target)))
         return decomposition
 
+    def __repr__(self):
+        out = 'reference points:' + os.linesep
+        for p in self._reference_points:
+            out += str(p) + os.linesep
+        out += 'weightings:' + os.linesep
+        out += str(self._weights)
+        return out
+  

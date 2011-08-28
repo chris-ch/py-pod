@@ -1,5 +1,5 @@
 """
-Various functions operating on vectors.
+Various vector operations.
 """
 
 import math
