@@ -25,7 +25,7 @@ import math
 import logging
 import os
 
-_logger = logging.getLogger('pod')
+_logger = logging.getLogger('pca')
 
 from mathtools import vadd
 from mathtools import vsub
@@ -36,12 +36,13 @@ from mathtools import units
 
 def project(point, def_point):
   """
+  Projects a point onto the 1-dim subspace defined by def_point.
   """
   denom = sum_product(def_point, def_point)
   num = sum_product(vsub(point, def_point), def_point)    
   component = scale(num / denom, def_point)
-  proj = vadd(component, def_point)
-  return proj
+  projected = vadd(component, def_point)
+  return projected
   
 def combined_distance(generator_weight):
   """
@@ -77,9 +78,9 @@ def find_components(source, references,
     @type source: list
     @param references: list of reference points
     @type references: list
-    @param epsilon: limit of the error sequence for stopping iteration
+    @param epsilon: limit of the error sequence for stopping iterations
     @type epsilon: float
-    @param max_iter: safeguard for stopping iteration
+    @param max_iter: safeguard for stopping iterations
     @type max_iter: int
     @param max_factors: limit for the number of reference points, None allowing to use all of them
     @type max_factors: int
@@ -89,7 +90,7 @@ def find_components(source, references,
     @rtype: IterativeComponentAnalysis
     """
     r = ComponentAnalysis(references, epsilon, max_iter, max_factors)
-    r.resolve(source)
+    r.solve(source)
     return r
 
 class ComponentAnalysis(object):
@@ -117,11 +118,11 @@ class ComponentAnalysis(object):
         for count, r in enumerate(references):
             ref = tuple(r)
             if ref in self._reference_points:
-                logging.warning('filtered out redundant reference %d' % count)
+                _logger.warning('filtered out redundant reference %d' % count)
                 self._ignores.append(ref)
                 
             elif norm(ref) == 0.0:
-                logging.warning('filtered out reference at origin %d' % count)
+                _logger.warning('filtered out reference at origin %d' % count)
                 self._ignores.append(ref)
             
             self._reference_points.append(ref)
@@ -154,17 +155,79 @@ class ComponentAnalysis(object):
             decomposition = vadd(decomposition, scale(w_d, d))
         return decomposition
     
-    def get_weighting(self, position):
+    def _project_shortest(self, point, reference_points):
+        """ Returns the projector that projects onto the closest of the 1-dim 
+        subspaces defined by the reference points.
         """
-        Returns the weight assigned to the reference provided in the constructor
-        at the indicated position.
+        origin = [0.0] * self._dimension
+        if norm(vsub(point, origin)) <= self._epsilon:
+            # already matched: we are done
+            return point
+            
+        projections = dict()
+        distances = dict()
+        for ref in reference_points:
+            projections[ref] = project(point, ref)
+            distances[ref] = self._distance(point, projections[ref], ref)
+            _logger.debug('distance to reference %.3f' % distances[ref])
+                
+        if len(reference_points) == 0:
+            # no eligible point left
+            return point
         
-        @param position: position of the reference in the list provided in the constructor
-        @type position: int
+        # finds main driver (shortest distance to ref line)
+        def by_dist(ref1, ref2, d=distances):
+            return cmp(d[ref1], d[ref2])
+            
+        reference_points.sort(by_dist)
+        
+        closest = reference_points[0]
+        
+        additional_weight = units(projections[closest], closest)
+        self._weights[closest] += additional_weight
+        
+        return vsub(point, projections[closest])
+    
+    def solve(self, point):
         """
-        ref = self._reference_points[position]
-        return self._weights[ref]
+        Iterates decomposition until convergence or max iteration is reached.
         
+        @param point: coordinates of the point to be decompositiond
+        @type point: list
+        @return: coordinates of decomposition point
+        @rtype: list
+        """
+        _logger.info(' ------------- STARTING PROCESS -------------')
+        self._start = tuple(point)
+        reference_points = [ref for ref in self._reference_points if ref not in self._ignores]
+        projector = self._start
+        step = 1
+        _logger.info('iteration count limit at %d' % self._max_iter)
+        while True:
+            previous = self._compute_replicate()
+            _logger.info(' ------------- ITERATION %d -------------' % step)
+            _logger.info('current distance to origin: %f' % norm(projector))
+            projector = self._project_shortest(projector, reference_points)
+            enabled_drivers = [p for p in self._weights.keys() 
+                                  if abs(self._weights[p]) > 0.0]
+            
+            _logger.debug('number of drivers: %d' % len(enabled_drivers))
+            if len(enabled_drivers) >= self._max_factors:
+                # limits number of drivers
+                _logger.info('count limit reached for drivers: %d' % self._max_factors)
+                reference_points = enabled_drivers
+                
+            replicate = self._compute_replicate()
+            diff = norm(vsub(replicate, previous))
+            _logger.info('replication improvement after iteration: %f' % diff)
+            step = step + 1
+            if diff <= self._epsilon or step >= self._max_iter:
+                break
+        
+        _logger.info('diff: %.03f' % diff)
+        _logger.info('remainder length: %.03f' % norm(vsub(replicate, self._start)))
+        return replicate
+
     def get_weightings(self):
         """
         Returns the weights assigned to the references in order to construct the
@@ -184,7 +247,7 @@ class ComponentAnalysis(object):
     
     def get_error_norm(self):
         """
-        Returns a measure of the decomposition error.
+        Returns a measure of the replication error.
         
         @return: length of the difference between the result and the initial point
         @rtype: float
@@ -223,81 +286,6 @@ class ComponentAnalysis(object):
         max_abs_weight_pos = sorted_weights[rank][0]
         return max_abs_weight_pos
     
-    def _project_point(self, point, reference_points):
-        """ Projects onto the closest of the straight lines defined by 
-        the reference points.
-        """
-        # computes projection of source point onto the subspaces
-        # defined by each ref point
-        origin = [0.0] * self._dimension
-        if norm(vsub(point, origin)) <= self._epsilon:
-            # already matched: do nothing
-            return point
-            
-        projections = dict()
-        distances = dict()
-        for ref in reference_points:
-            projections[ref] = project(point, ref)
-            distances[ref] = self._distance(point, projections[ref], ref)
-            _logger.debug('distance to reference %.3f' % distances[ref])
-                
-        if len(reference_points) == 0:
-            # no eligible point left
-            return point
-        
-        # finds main driver (shortest distance to ref line)
-        def by_dist(ref1, ref2, d=distances):
-            return cmp(d[ref1], d[ref2])
-            
-        reference_points.sort(by_dist)
-        
-        closest = reference_points[0]
-        
-        additional_weight = units(projections[closest], closest)
-        self._weights[closest] += additional_weight
-        _logger.debug('closest driver: %s, weight=%f' % (str(closest), self._weights[closest]))
-        
-        return vsub(point, projections[closest])
-    
-    def resolve(self, point):
-        """
-        Iterates decomposition until convergence or max iteration is reached.
-        
-        @param point: coordinates of the point to be decompositiond
-        @type point: list
-        @return: coordinates of decomposition point
-        @rtype: list
-        """
-        _logger.debug(' ------------- STARTING PROCESS -------------')
-        target = tuple(point)
-        self._start = target
-        reference_points = [ref for ref in self._reference_points if ref not in self._ignores]
-        projector = self._project_point(target, reference_points)
-        diff = None
-        _logger.debug('distance to projection: %f' % norm(projector))
-        i = 0
-        while (diff is None) or (diff > self._epsilon and i < self._max_iter):
-            i = i + 1
-            previous = self._compute_replicate()
-            _logger.debug(' ------------- ITERATION %d -------------' % i)
-            projector = self._project_point(projector, reference_points)
-            enabled_drivers = [p for p in self._weights.keys() if abs(self._weights[p]) > 0.0]
-            drivers_count = len(enabled_drivers)
-            _logger.debug('number of drivers: %d' % drivers_count)
-            if drivers_count >= self._max_factors:
-                # limits number of drivers
-                _logger.debug('count limit reached for drivers: %d' % self._max_factors)
-                reference_points = enabled_drivers
-                
-            decomposition = self._compute_replicate()
-            diff = norm(vsub(decomposition, previous))
-            _logger.debug('improvement: %f' % diff)
-            _logger.debug('distance to projection: %f' % norm(projector))
-        
-        _logger.debug('start:' + str(target))
-        _logger.debug('diff:' + str(vsub(decomposition, target)))
-        return decomposition
-
     def __repr__(self):
         out = 'reference points:' + os.linesep
         for p in self._reference_points:
