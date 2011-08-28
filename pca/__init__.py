@@ -147,24 +147,22 @@ class ComponentAnalysis(object):
             # already matched: we are done
             return point
         
-        projections = dict()
-        distances = dict()
+        smallest_projection = None
+        smallest_distance = None
+        closest_point = None
         for ref in reference_points:
-            projections[ref] = project(point, ref)
-            distances[ref] = self._distance(point, projections[ref], ref)
-            _logger.debug('distance to reference %.3f' % distances[ref])
+            projection = project(point, ref)
+            distance = self._distance(point, projection, ref)
+            _logger.debug('testing distance to reference %.3f' % distance)
+            if smallest_projection is None or distance < smallest_distance:
+                smallest_distance = distance
+                smallest_projection = projection
+                closest_point = ref
                 
-        # finds main driver (shortest distance to ref line)
-        def by_dist(ref1, ref2, d=distances):
-            return cmp(d[ref1], d[ref2])
-            
-        reference_points.sort(by_dist)
-        closest = reference_points[0]
+        additional_weight = units(smallest_projection, closest_point)
+        self._weights[closest_point] += additional_weight
         
-        additional_weight = units(projections[closest], closest)
-        self._weights[closest] += additional_weight
-        
-        return vsub(point, projections[closest])
+        return vsub(point, smallest_projection)
     
     def solve(self, point):
         """
