@@ -106,6 +106,7 @@ class ComponentAnalysis(object):
         
         self._reference_points = []
         self._ignores = []
+        self._weights = dict()
         for count, r in enumerate(references):
             ref = tuple(r)
             if ref in self._reference_points:
@@ -117,21 +118,12 @@ class ComponentAnalysis(object):
                 self._ignores.append(ref)
             
             self._reference_points.append(ref)
-            
-        self._weights = dict()
-        for p in self._reference_points:
-            self._weights[p] = 0.0
+            self._weights[ref] = 0.0
             
         self._epsilon = epsilon
         self._start = None
         self._max_iter = max_iter
-        if max_factors is None:
-            self._max_factors = len(self._reference_points)
-            
-        else:
-            self._max_factors = max_factors
-            
-        self._error_norm = None
+        self._max_factors = max_factors or len(self._reference_points)
         
     def _compute_replicate(self):
         """
@@ -154,7 +146,7 @@ class ComponentAnalysis(object):
         if norm(vsub(point, origin)) <= self._epsilon:
             # already matched: we are done
             return point
-            
+        
         projections = dict()
         distances = dict()
         for ref in reference_points:
@@ -162,10 +154,6 @@ class ComponentAnalysis(object):
             distances[ref] = self._distance(point, projections[ref], ref)
             _logger.debug('distance to reference %.3f' % distances[ref])
                 
-        if len(reference_points) == 0:
-            # no eligible point left
-            return point
-        
         # finds main driver (shortest distance to ref line)
         def by_dist(ref1, ref2, d=distances):
             return cmp(d[ref1], d[ref2])
