@@ -197,7 +197,7 @@ class ComponentAnalysis(object):
         while True:
             previous = self._compute_replicate()
             _logger.info(' ------------- ITERATION %d -------------' % step)
-            _logger.info('current distance to origin: %f' % norm(projector))
+            _logger.info('starting length: %f' % norm(projector))
             projector = self._project_shortest(projector, reference_points)
             enabled_drivers = [p for p in self._weights.keys() 
                                   if abs(self._weights[p]) > 0.0]
@@ -210,7 +210,7 @@ class ComponentAnalysis(object):
                 
             replicate = self._compute_replicate()
             diff = norm(vsub(replicate, previous))
-            _logger.info('replication improvement after iteration: %f' % diff)
+            _logger.info('replication improvement after iteration: %.03f' % diff)
             step = step + 1
             if diff <= self._epsilon or step > self._max_iter:
                 break
