@@ -8,7 +8,7 @@ Usage example:
 >>>          [-2.0, -1.0],
 >>>          [3.0, 4.0] ]
 >>> target = [-2.0, 1.5]
->>> decomposition = pod.find_components(target, refs, epsilon=1E-6, max_iter=90)
+>>> decomposition = pca.find_components(target, refs, epsilon=1E-6, max_iter=90)
 >>> print decomposition.get_replicate()
 [-1.9999991745134178, 1.4999993808850638]
 >>> print decomposition.get_weightings()
