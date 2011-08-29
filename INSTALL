@@ -1,3 +1,7 @@
 Just run:
 
 python setup.py install
+
+For development pruposes, run:
+
+python setup.py develop
