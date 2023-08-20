@@ -41,13 +41,6 @@ class Matrix(object):
         self.dim_col = dim_col
         self._vectors = {}
 
-    def transpose(self):
-        m = Matrix(self.get_dim_col(), self.get_dim_row())
-        for i in range(self.get_dim_row()):
-            for j in range(self.get_dim_col()):
-                m.set_value(j, i, self.get_value(i, j))
-        return m
-
     def get_value(self, i, j):
         assert i < self.get_dim_row(), 'row %d exceeding dimension %d' % (i, self.get_dim_row())
         assert j < self.get_dim_col(), 'column %d exceeding dimension %d' % (j, self.get_dim_col())
@@ -122,25 +115,6 @@ class Matrix(object):
                 det += sign * self.get_value(0, i) * minor.determinant()
         return det
 
-    def cofactors(self):
-        m = Matrix(self.get_dim_row())
-        for row in range(self.get_dim_row()):
-            for col in range(self.get_dim_col()):
-                sign = 1.0 if row % 2 == col % 2 else -1.0
-                v = sign * self.minor(row, col).determinant()
-                m.set_value(row, col, v)
-        return m
-
-    def multiply(self, m):
-        return prod_matrix(self, m)
-
-    def copy(self):
-        c = Matrix(self.get_dim_row(), self.get_dim_col())
-        for row in range(self.get_dim_row()):
-            for col in range(self.get_dim_col()):
-                c.set_value(row, col, self.get_value(row, col))
-        return c
-
     def __repr__(self):
         out = '(M%dx%d)' % (self.get_dim_row(), self.get_dim_col()) + os.linesep
         for row in range(self.get_dim_row()):
@@ -208,10 +182,6 @@ class Vector(object):
 
     def norm(self) -> float:
         return math.sqrt(self.product(self))
-
-    def symmetric(self) -> Vector:
-        null_vector = Vector(self.dimension)
-        return null_vector.sub(self)
 
     def units(self, unit_vector: Vector) -> float:
         """

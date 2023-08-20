@@ -45,11 +45,6 @@ class VecSpaceTest(unittest.TestCase):
         m.set_value(0, 2, -1.0)
         self.assertEqual(m.get_dim_row(), 3)
         self.assertEqual(m.get_dim_col(), 4)
-        m = m.transpose()
-        m.set_value(3, 1, -0.6)
-        self.assertEqual(m.get_dim_row(), 4)
-        self.assertEqual(m.get_dim_col(), 3)
-        self.assertEqual(m.get_value(3, 1), -0.6)
 
     def test_product_matrix(self):
         m1 = linalg.Matrix(2, 3)

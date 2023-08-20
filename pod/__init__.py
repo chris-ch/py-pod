@@ -41,9 +41,9 @@ __all__ = ['decompose', 'combined_distance']
 
 import os
 import logging
-from typing import Iterable, List
+from typing import Iterable, List, Callable, Optional
 
-from vecspace import define_line
+from projection import define_line
 from linalg import create_vector_from_coordinates, Vector, zero
 from util import NullHandler
 
@@ -52,7 +52,7 @@ _logger = logging.getLogger('pod')
 _logger.addHandler(_h)
 
 
-def combined_distance(generator_weight):
+def combined_distance(generator_weight: float) -> Callable[[Vector, Vector, Vector, float], float]:
     """
     Distance function used for ordering the projections.
 
@@ -66,8 +66,7 @@ def combined_distance(generator_weight):
     @type generator_weight: float usually in range [0.0, 1.0]
     """
 
-    def func(start_point, projected_point,
-             generator_point, w=generator_weight):
+    def func(start_point: Vector, projected_point: Vector, generator_point: Vector, w=generator_weight) -> float:
         d1 = start_point.sub(generator_point).norm()
         d2 = start_point.sub(projected_point).norm()
         return w * d1 + (1.0 - w) * d2
@@ -75,7 +74,7 @@ def combined_distance(generator_weight):
     return func
 
 
-def decompose(source, references,
+def decompose(source, references: List[List[float]],
               epsilon=1E-10, max_iter=20,
               max_factors=None, max_weight=None
               ):
@@ -106,7 +105,8 @@ class IterativeDecomposition(object):
     Decomposition interface definition.
     """
 
-    def __init__(self, references, epsilon=1E-10, max_iter=20, max_factors=None):
+    def __init__(self, references: List[List[float]], epsilon: float = 1E-10,
+                 max_iter: int = 20, max_factors: Optional[int] = None):
         if len(references) <= 0:
             raise ValueError('at least one reference is required')
 
@@ -246,11 +246,11 @@ class BaseDecomposition(IterativeDecomposition):
     """
 
     def __init__(self, references,
-                 epsilon=1E-10,
-                 max_iter=20,
-                 max_factors=None,
-                 max_weight=None,
-                 distance=combined_distance(0.0)):
+                 epsilon: float = 1E-10,
+                 max_iter: int = 20,
+                 max_factors: Optional[int] = None,
+                 max_weight: Optional[float] = None,
+                 distance: float = combined_distance(0.0)):
         """
         @param distance: function of start point, projected point and generator point
         """
