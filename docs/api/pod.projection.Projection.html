@@ -6,7 +6,7 @@
 
   <head>
     
-    <title>pod.linalg</title>
+    <title>pod.projection.Projection</title>
     <meta name="generator" content="pydoctor 23.4.1"> 
         
     </meta>
@@ -141,8 +141,8 @@
   <div>
 
       <div class="thingTitle">
-        <span>Module</span>
-        <code class="thisobject"><a href="pod.linalg.html" class="internal-link" title="This module">linalg</a></code> 
+        <span>Class</span>
+        <code class="thisobject"><a href="pod.projection.Projection.html" class="internal-link" title="This class"><wbr></wbr>Projection</a></code> 
       </div>
       
       <div>
@@ -151,7 +151,10 @@
         
          
 
-        <div class="childrenKindTitle">Classes</div>
+        
+        
+
+        <div class="childrenKindTitle">Methods</div>
         <ul>
     
     <li class="">
@@ -160,7 +163,7 @@
         
 
         
-            <div class="itemName"><code><a href="pod.linalg.Matrix.html" class="internal-link" title="pod.linalg.Matrix"><wbr></wbr>Matrix</a></code>
+            <div class="itemName"><code><a href="#__init__" class="internal-link" title="pod.projection.Projection.__init__">__init__</a></code>
             </div>
         
 
@@ -170,43 +173,7 @@
         
 
         
-            <div class="itemName"><code><a href="pod.linalg.Vector.html" class="internal-link" title="pod.linalg.Vector"><wbr></wbr>Vector</a></code>
-            </div>
-        
-
-    </li>
-</ul>
-
-        <div class="childrenKindTitle">Functions</div>
-        <ul>
-    
-    <li class="">
-        
-        
-        
-
-        
-            <div class="itemName"><code><a href="#create_vector_from_coordinates" class="internal-link" title="pod.linalg.create_vector_from_coordinates">create<wbr></wbr>_vector<wbr></wbr>_from<wbr></wbr>_coordinates</a></code>
-            </div>
-        
-
-    </li><li class="">
-        
-        
-        
-
-        
-            <div class="itemName"><code><a href="#prod_matrix" class="internal-link" title="pod.linalg.prod_matrix">prod<wbr></wbr>_matrix</a></code>
-            </div>
-        
-
-    </li><li class="">
-        
-        
-        
-
-        
-            <div class="itemName"><code><a href="#zero" class="internal-link" title="pod.linalg.zero">zero</a></code>
+            <div class="itemName"><code><a href="#projected.setter" class="internal-link" title="pod.projection.Projection.projected.setter">projected<wbr></wbr>.setter</a></code>
             </div>
         
 
@@ -216,16 +183,36 @@
         
          
 
-        <div class="childrenKindTitle">Variables</div>
+        <div class="childrenKindTitle">Attributes</div>
         <ul>
     
-    <li class="private">
+    <li class="">
         
         
         
 
         
-            <div class="itemName"><code><a href="#_h" class="internal-link" title="pod.linalg._h">_h</a></code>
+            <div class="itemName"><code><a href="#projected" class="internal-link" title="pod.projection.Projection.projected">projected</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#projector" class="internal-link" title="pod.projection.Projection.projector">projector</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#start" class="internal-link" title="pod.projection.Projection.start">start</a></code>
             </div>
         
 
@@ -235,7 +222,27 @@
         
 
         
-            <div class="itemName"><code><a href="#_logger" class="internal-link" title="pod.linalg._logger">_logger</a></code>
+            <div class="itemName"><code><a href="#_projected" class="internal-link" title="pod.projection.Projection._projected">_projected</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_projector" class="internal-link" title="pod.projection.Projection._projector">_projector</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_start" class="internal-link" title="pod.projection.Projection._start">_start</a></code>
             </div>
         
 
@@ -249,14 +256,17 @@
   </div><div>
 
       <div class="thingTitle">
-        <span>Package</span>
-        <code><a href="index.html" class="internal-link" title="The parent of this module">pod</a></code> 
+        <span>Module</span>
+        <code><a href="pod.projection.html" class="internal-link" title="The parent of this class">projection</a></code> 
       </div>
       
       <div>
         
 
-        <div class="childrenKindTitle">Modules</div>
+        
+         
+
+        <div class="childrenKindTitle">Classes</div>
         <ul>
     
     <li class=" thisobject">
@@ -265,7 +275,7 @@
         
 
         
-            <div class="itemName"><code><a href="pod.linalg.html" class="internal-link" title="pod.linalg">linalg</a></code>
+            <div class="itemName"><code><a href="pod.projection.Projection.html" class="internal-link" title="pod.projection.Projection"><wbr></wbr>Projection</a></code>
             </div>
         
 
@@ -275,7 +285,7 @@
         
 
         
-            <div class="itemName"><code><a href="pod.projection.html" class="internal-link" title="pod.projection">projection</a></code>
+            <div class="itemName"><code><a href="pod.projection.StraightLine.html" class="internal-link" title="pod.projection.StraightLine"><wbr></wbr>Straight<wbr></wbr>Line</a></code>
             </div>
         
 
@@ -285,33 +295,7 @@
         
 
         
-            <div class="itemName"><code><a href="pod.util.html" class="internal-link" title="pod.util">util</a></code>
-            </div>
-        
-
-    </li>
-</ul> 
-
-        <div class="childrenKindTitle">Classes</div>
-        <ul>
-    
-    <li class="">
-        
-        
-        
-
-        
-            <div class="itemName"><code><a href="pod.BaseDecomposition.html" class="internal-link" title="pod.BaseDecomposition"><wbr></wbr>Base<wbr></wbr>Decomposition</a></code>
-            </div>
-        
-
-    </li><li class="">
-        
-        
-        
-
-        
-            <div class="itemName"><code><a href="pod.IterativeDecomposition.html" class="internal-link" title="pod.IterativeDecomposition"><wbr></wbr>Iterative<wbr></wbr>Decomposition</a></code>
+            <div class="itemName"><code><a href="pod.projection.VectorSpace.html" class="internal-link" title="pod.projection.VectorSpace"><wbr></wbr>Vector<wbr></wbr>Space</a></code>
             </div>
         
 
@@ -327,17 +311,7 @@
         
 
         
-            <div class="itemName"><code><a href="index.html#combined_distance" class="internal-link" title="pod.combined_distance">combined<wbr></wbr>_distance</a></code>
-            </div>
-        
-
-    </li><li class="">
-        
-        
-        
-
-        
-            <div class="itemName"><code><a href="index.html#decompose" class="internal-link" title="pod.decompose">decompose</a></code>
+            <div class="itemName"><code><a href="pod.projection.html#define_line" class="internal-link" title="pod.projection.define_line">define<wbr></wbr>_line</a></code>
             </div>
         
 
@@ -356,7 +330,7 @@
         
 
         
-            <div class="itemName"><code><a href="index.html#_h" class="internal-link" title="pod._h">_h</a></code>
+            <div class="itemName"><code><a href="pod.projection.html#_h" class="internal-link" title="pod.projection._h">_h</a></code>
             </div>
         
 
@@ -366,7 +340,7 @@
         
 
         
-            <div class="itemName"><code><a href="index.html#_logger" class="internal-link" title="pod._logger">_logger</a></code>
+            <div class="itemName"><code><a href="pod.projection.html#_logger" class="internal-link" title="pod.projection._logger">_logger</a></code>
             </div>
         
 
@@ -395,67 +369,68 @@
         
 
         <div class="page-header">
-          <h1 class="module"><code><code><a href="index.html" class="internal-link">pod</a></code><wbr></wbr>.<code><a href="pod.linalg.html" class="internal-link" title="pod.linalg">linalg</a></code></code></h1>
+          <h1 class="class"><code><code><a href="index.html" class="internal-link">pod</a></code><wbr></wbr>.<code><a href="pod.projection.html" class="internal-link" title="pod.projection">projection</a></code><wbr></wbr>.<code><a href="pod.projection.Projection.html" class="internal-link" title="pod.projection.Projection">Projection</a></code></code></h1>
           <div id="showPrivate">
             <button class="btn btn-link" onclick="togglePrivate()">Toggle Private API</button>
           </div>
         </div>
 
         <div class="categoryHeader">
-          module documentation
+          class documentation
         </div>
 
         <div class="extrasDocstring">
-          
-          <p></p>
+          <p class="class-signature"><code><span class="py-keyword">class</span> <span class="py-defname">Projection</span>(object):</code></p><p>Constructor: <code><a href="#__init__" class="internal-link" title="pod.projection.Projection.__init__">Projection(projected, start)</a></code></p>
+          <p><a href="classIndex.html#pod.projection.Projection">View In Hierarchy</a></p>
         </div>
 
         <div class="moduleDocstring">
-          <div><p>Basic linear algebra components and functions.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Author</td></tr><tr><td colspan="2"><p>Christophe Alexandre &lt;christophe.alexandre at pm dot me&gt;</p>
-<p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
-<p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p>
-<p>You should have received a copy of the GNU Lesser General Public License along with this program.  If not, see &lt;http://www.gnu.org/licenses/lgpl.txt&gt;.</p>
-</td></tr></table></div>
+          <div><p>Simple container gathering details about projection.</p></div>
         </div>
 
         <div id="splitTables">
-          <table class="children sortable" id="id3">
+          <table class="children sortable" id="id9">
   
   
-  <tr class="class">
+  <tr class="method">
     
-    <td>Class</td>
-    <td><code><a href="pod.linalg.Matrix.html" class="internal-link" title="pod.linalg.Matrix"><wbr></wbr>Matrix</a></code></td>
-    <td><span class="undocumented">No class docstring; 0/3 instance variable, 1/12 method documented</span></td>
-  </tr><tr class="class">
-    
-    <td>Class</td>
-    <td><code><a href="pod.linalg.Vector.html" class="internal-link" title="pod.linalg.Vector"><wbr></wbr>Vector</a></code></td>
-    <td><span class="undocumented">No summary</span></td>
-  </tr><tr class="function">
-    
-    <td>Function</td>
-    <td><code><a href="#create_vector_from_coordinates" class="internal-link" title="pod.linalg.create_vector_from_coordinates">create<wbr></wbr>_vector<wbr></wbr>_from<wbr></wbr>_coordinates</a></code></td>
+    <td>Method</td>
+    <td><code><a href="#__init__" class="internal-link" title="pod.projection.Projection.__init__">__init__</a></code></td>
     <td><span class="undocumented">Undocumented</span></td>
-  </tr><tr class="function">
+  </tr><tr class="method">
     
-    <td>Function</td>
-    <td><code><a href="#prod_matrix" class="internal-link" title="pod.linalg.prod_matrix">prod<wbr></wbr>_matrix</a></code></td>
+    <td>Method</td>
+    <td><code><a href="#projected.setter" class="internal-link" title="pod.projection.Projection.projected.setter">projected<wbr></wbr>.setter</a></code></td>
     <td><span class="undocumented">Undocumented</span></td>
-  </tr><tr class="function">
+  </tr><tr class="property">
     
-    <td>Function</td>
-    <td><code><a href="#zero" class="internal-link" title="pod.linalg.zero">zero</a></code></td>
+    <td>Property</td>
+    <td><code><a href="#projected" class="internal-link" title="pod.projection.Projection.projected">projected</a></code></td>
     <td><span class="undocumented">Undocumented</span></td>
-  </tr><tr class="variable private">
+  </tr><tr class="property">
     
-    <td>Variable</td>
-    <td><code><a href="#_h" class="internal-link" title="pod.linalg._h">_h</a></code></td>
+    <td>Property</td>
+    <td><code><a href="#projector" class="internal-link" title="pod.projection.Projection.projector">projector</a></code></td>
     <td><span class="undocumented">Undocumented</span></td>
-  </tr><tr class="variable private">
+  </tr><tr class="property">
     
-    <td>Variable</td>
-    <td><code><a href="#_logger" class="internal-link" title="pod.linalg._logger">_logger</a></code></td>
+    <td>Property</td>
+    <td><code><a href="#start" class="internal-link" title="pod.projection.Projection.start">start</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_projected" class="internal-link" title="pod.projection.Projection._projected">_projected</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_projector" class="internal-link" title="pod.projection.Projection._projector">_projector</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_start" class="internal-link" title="pod.projection.Projection._start">_start</a></code></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr>
 </table>
@@ -465,21 +440,21 @@
         </div>
 
         <div id="childList">
-          <div class="basefunction">
+          <div class="basemethod">
   
   
-  <a name="pod.linalg.create_vector_from_coordinates">
+  <a name="pod.projection.Projection.__init__">
     
   </a>
-  <a name="create_vector_from_coordinates">
+  <a name="__init__">
     
   </a>
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">create_vector_from_coordinates</span><span class="function-signature">(*coordinates: <code>List[<wbr></wbr>float]</code>) -&gt; <code><a href="pod.linalg.Vector.html" class="internal-link" title="pod.linalg.Vector">Vector</a></code></span>:
+    <span class="py-keyword">def</span> <span class="py-defname">__init__</span><span class="function-signature">(self, projected: <code>Vector</code>, start: <code>Vector</code>)</span>:
     
-    <a class="headerLink" href="#create_vector_from_coordinates" title="pod.linalg.create_vector_from_coordinates">
+    <a class="headerLink" href="#__init__" title="pod.projection.Projection.__init__">
       
       
       ¶
@@ -489,21 +464,21 @@
     
     <div><p class="undocumented">Undocumented</p></div>
   </div>
-</div><div class="basefunction">
+</div><div class="basemethod">
   
   
-  <a name="pod.linalg.prod_matrix">
+  <a name="pod.projection.Projection.projected.setter">
     
   </a>
-  <a name="prod_matrix">
+  <a name="projected.setter">
     
   </a>
   <div class="functionHeader">
     
+    @<a href="#projected.setter" class="internal-link" title="pod.projection.Projection.projected.setter">projected.setter</a><br />
+    <span class="py-keyword">def</span> <span class="py-defname">projected</span><span class="function-signature">(self, value: <code>Vector</code>)</span>:
     
-    <span class="py-keyword">def</span> <span class="py-defname">prod_matrix</span><span class="function-signature">(m1: <code><a href="pod.linalg.Matrix.html" class="internal-link" title="pod.linalg.Matrix">Matrix</a></code>, m2: <code><a href="pod.linalg.Matrix.html" class="internal-link" title="pod.linalg.Matrix">Matrix</a></code>) -&gt; <code><a href="pod.linalg.Matrix.html" class="internal-link" title="pod.linalg.Matrix">Matrix</a></code></span>:
-    
-    <a class="headerLink" href="#prod_matrix" title="pod.linalg.prod_matrix">
+    <a class="headerLink" href="#projected.setter" title="pod.projection.Projection.projected.setter">
       
       
       ¶
@@ -513,44 +488,20 @@
     
     <div><p class="undocumented">Undocumented</p></div>
   </div>
-</div><div class="basefunction">
+</div><div class="baseproperty">
   
   
-  <a name="pod.linalg.zero">
+  <a name="pod.projection.Projection.projected">
     
   </a>
-  <a name="zero">
-    
-  </a>
-  <div class="functionHeader">
-    
-    
-    <span class="py-keyword">def</span> <span class="py-defname">zero</span><span class="function-signature">(dimension: <code>int</code>) -&gt; <code><a href="pod.linalg.Vector.html" class="internal-link" title="pod.linalg.Vector">Vector</a></code></span>:
-    
-    <a class="headerLink" href="#zero" title="pod.linalg.zero">
-      
-      
-      ¶
-    </a>
-  </div>
-  <div class="docstring functionBody">
-    
-    <div><p class="undocumented">Undocumented</p></div>
-  </div>
-</div><div class="basevariable private">
-  
-  
-  <a name="pod.linalg._h">
-    
-  </a>
-  <a name="_h">
+  <a name="projected">
     
   </a>
   <div class="functionHeader">
+    @property<br />
+    <span class="py-defname">projected</span>: <code>Vector</code> =
     
-    <span class="py-defname">_h</span> =
-    
-    <a class="headerLink" href="#_h" title="pod.linalg._h">
+    <a class="headerLink" href="#projected" title="pod.projection.Projection.projected">
       
       
       ¶
@@ -561,20 +512,116 @@
     <div><p class="undocumented">Undocumented</p></div>
     
   </div>
-</div><div class="basevariable private">
+</div><div class="baseproperty">
   
   
-  <a name="pod.linalg._logger">
+  <a name="pod.projection.Projection.projector">
     
   </a>
-  <a name="_logger">
+  <a name="projector">
+    
+  </a>
+  <div class="functionHeader">
+    @property<br />
+    <span class="py-defname">projector</span>: <code>Vector</code> =
+    
+    <a class="headerLink" href="#projector" title="pod.projection.Projection.projector">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseproperty">
+  
+  
+  <a name="pod.projection.Projection.start">
+    
+  </a>
+  <a name="start">
+    
+  </a>
+  <div class="functionHeader">
+    @property<br />
+    <span class="py-defname">start</span>: <code>Vector</code> =
+    
+    <a class="headerLink" href="#start" title="pod.projection.Projection.start">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="pod.projection.Projection._projected">
+    
+  </a>
+  <a name="_projected">
     
   </a>
   <div class="functionHeader">
     
-    <span class="py-defname">_logger</span> =
+    <span class="py-defname">_projected</span> =
     
-    <a class="headerLink" href="#_logger" title="pod.linalg._logger">
+    <a class="headerLink" href="#_projected" title="pod.projection.Projection._projected">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="pod.projection.Projection._projector">
+    
+  </a>
+  <a name="_projector">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_projector</span> =
+    
+    <a class="headerLink" href="#_projector" title="pod.projection.Projection._projector">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="pod.projection.Projection._start">
+    
+  </a>
+  <a name="_start">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_start</span> =
+    
+    <a class="headerLink" href="#_start" title="pod.projection.Projection._start">
       
       
       ¶

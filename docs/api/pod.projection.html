@@ -6,7 +6,7 @@
 
   <head>
     
-    <title>pod</title>
+    <title>pod.projection</title>
     <meta name="generator" content="pydoctor 23.4.1"> 
         
     </meta>
@@ -141,8 +141,106 @@
   <div>
 
       <div class="thingTitle">
+        <span>Module</span>
+        <code class="thisobject"><a href="pod.projection.html" class="internal-link" title="This module">projection</a></code> 
+      </div>
+      
+      <div>
+        
+
+        
+         
+
+        <div class="childrenKindTitle">Classes</div>
+        <ul>
+    
+    <li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="pod.projection.Projection.html" class="internal-link" title="pod.projection.Projection"><wbr></wbr>Projection</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="pod.projection.StraightLine.html" class="internal-link" title="pod.projection.StraightLine"><wbr></wbr>Straight<wbr></wbr>Line</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="pod.projection.VectorSpace.html" class="internal-link" title="pod.projection.VectorSpace"><wbr></wbr>Vector<wbr></wbr>Space</a></code>
+            </div>
+        
+
+    </li>
+</ul>
+
+        <div class="childrenKindTitle">Functions</div>
+        <ul>
+    
+    <li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#define_line" class="internal-link" title="pod.projection.define_line">define<wbr></wbr>_line</a></code>
+            </div>
+        
+
+    </li>
+</ul> 
+
+        
+         
+
+        <div class="childrenKindTitle">Variables</div>
+        <ul>
+    
+    <li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_h" class="internal-link" title="pod.projection._h">_h</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_logger" class="internal-link" title="pod.projection._logger">_logger</a></code>
+            </div>
+        
+
+    </li>
+</ul> 
+
+        
+         
+        
+      </div>
+  </div><div>
+
+      <div class="thingTitle">
         <span>Package</span>
-        <code class="thisobject"><a href="index.html" class="internal-link" title="This package">pod</a></code> 
+        <code><a href="index.html" class="internal-link" title="The parent of this module">pod</a></code> 
       </div>
       
       <div>
@@ -161,7 +259,7 @@
             </div>
         
 
-    </li><li class="">
+    </li><li class=" thisobject">
         
         
         
@@ -219,7 +317,7 @@
         
 
         
-            <div class="itemName"><code><a href="#combined_distance" class="internal-link" title="pod.combined_distance">combined<wbr></wbr>_distance</a></code>
+            <div class="itemName"><code><a href="index.html#combined_distance" class="internal-link" title="pod.combined_distance">combined<wbr></wbr>_distance</a></code>
             </div>
         
 
@@ -229,7 +327,7 @@
         
 
         
-            <div class="itemName"><code><a href="#decompose" class="internal-link" title="pod.decompose">decompose</a></code>
+            <div class="itemName"><code><a href="index.html#decompose" class="internal-link" title="pod.decompose">decompose</a></code>
             </div>
         
 
@@ -248,7 +346,7 @@
         
 
         
-            <div class="itemName"><code><a href="#_h" class="internal-link" title="pod._h">_h</a></code>
+            <div class="itemName"><code><a href="index.html#_h" class="internal-link" title="pod._h">_h</a></code>
             </div>
         
 
@@ -258,7 +356,7 @@
         
 
         
-            <div class="itemName"><code><a href="#_logger" class="internal-link" title="pod._logger">_logger</a></code>
+            <div class="itemName"><code><a href="index.html#_logger" class="internal-link" title="pod._logger">_logger</a></code>
             </div>
         
 
@@ -287,14 +385,14 @@
         
 
         <div class="page-header">
-          <h1 class="package"><code><code><a href="index.html" class="internal-link">pod</a></code></code></h1>
+          <h1 class="module"><code><code><a href="index.html" class="internal-link">pod</a></code><wbr></wbr>.<code><a href="pod.projection.html" class="internal-link" title="pod.projection">projection</a></code></code></h1>
           <div id="showPrivate">
             <button class="btn btn-link" onclick="togglePrivate()">Toggle Private API</button>
           </div>
         </div>
 
         <div class="categoryHeader">
-          package documentation
+          module documentation
         </div>
 
         <div class="extrasDocstring">
@@ -303,26 +401,7 @@
         </div>
 
         <div class="moduleDocstring">
-          <div><p>Framework for performing a Proper Orthogonal Decomposition (POD).</p>
-<p>Useful references:</p>
-<ul class="rst-simple">
-<li>http://en.wikipedia.org/wiki/Homogeneous_coordinates</li>
-<li>http://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations</li>
-</ul>
-<p>Usage example:</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> pod
-<span class="py-prompt">&gt;&gt;&gt; </span>refs = [ [-4.0, -1.0],
-<span class="py-prompt">&gt;&gt;&gt; </span>         [-2.0, -1.0],
-<span class="py-prompt">&gt;&gt;&gt; </span>         [3.0, 4.0] ]
-<span class="py-prompt">&gt;&gt;&gt; </span>target = [-2.0, 1.5]
-<span class="py-prompt">&gt;&gt;&gt; </span>decomposition = pod.decompose(target, refs, epsilon=1E-6, max_iter=90)
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-builtin">print</span>(decomposition.get_decomposition())
-<span class="py-output">[-1.9999991745134178, 1.4999993808850638]</span>
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-builtin">print</span>(decomposition.get_reference_weights())
-<span class="py-output">[0.96153806466991254, 0.0, 0.61538436138874408]</span>
-</pre><p>The example above shows the reconstruction of the target using 3 reference signals, from which only reference 1 and reference 3 are useful (reference 2 is assigned a weight of 0).</p>
-<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Author</td></tr><tr><td colspan="2"><p>Christophe Alexandre &lt;christophe.alexandre at pm dot me&gt;</p>
+          <div><p>Toolbox for handling projections.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Author</td></tr><tr><td colspan="2"><p>Christophe Alexandre &lt;christophe.alexandre at pm dot me&gt;</p>
 <p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
 <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p>
 <p>You should have received a copy of the GNU Lesser General Public License along with this program.  If not, see &lt;http://www.gnu.org/licenses/lgpl.txt&gt;.</p>
@@ -330,70 +409,75 @@
         </div>
 
         <div id="splitTables">
-          <table class="children sortable" id="id1">
-  
-  
-  <tr class="module">
-    
-    <td>Module</td>
-    <td><code><a href="pod.linalg.html" class="internal-link" title="pod.linalg">linalg</a></code></td>
-    <td>Basic linear algebra components and functions.</td>
-  </tr><tr class="module">
-    
-    <td>Module</td>
-    <td><code><a href="pod.projection.html" class="internal-link" title="pod.projection">projection</a></code></td>
-    <td>Toolbox for handling projections.</td>
-  </tr><tr class="module">
-    
-    <td>Module</td>
-    <td><code><a href="pod.util.html" class="internal-link" title="pod.util">util</a></code></td>
-    <td>Operations on matrices and various tools.</td>
-  </tr>
-</table>
-          
-
-            <p class="fromInitPy">From <code>__init__.py</code>:</p><table class="children sortable" id="id2">
+          <table class="children sortable" id="id6">
   
   
   <tr class="class">
     
     <td>Class</td>
-    <td><code><a href="pod.BaseDecomposition.html" class="internal-link" title="pod.BaseDecomposition"><wbr></wbr>Base<wbr></wbr>Decomposition</a></code></td>
-    <td>Decomposition on a set of reference points.</td>
+    <td><code><a href="pod.projection.Projection.html" class="internal-link" title="pod.projection.Projection"><wbr></wbr>Projection</a></code></td>
+    <td>Simple container gathering details about projection.</td>
   </tr><tr class="class">
     
     <td>Class</td>
-    <td><code><a href="pod.IterativeDecomposition.html" class="internal-link" title="pod.IterativeDecomposition"><wbr></wbr>Iterative<wbr></wbr>Decomposition</a></code></td>
-    <td>Decomposition interface definition.</td>
+    <td><code><a href="pod.projection.StraightLine.html" class="internal-link" title="pod.projection.StraightLine"><wbr></wbr>Straight<wbr></wbr>Line</a></code></td>
+    <td>Just a straight line.</td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><code><a href="pod.projection.VectorSpace.html" class="internal-link" title="pod.projection.VectorSpace"><wbr></wbr>Vector<wbr></wbr>Space</a></code></td>
+    <td>Defines a set on which we can project a point.</td>
   </tr><tr class="function">
     
     <td>Function</td>
-    <td><code><a href="#combined_distance" class="internal-link" title="pod.combined_distance">combined<wbr></wbr>_distance</a></code></td>
-    <td>Distance function used for ordering the projections.</td>
-  </tr><tr class="function">
-    
-    <td>Function</td>
-    <td><code><a href="#decompose" class="internal-link" title="pod.decompose">decompose</a></code></td>
-    <td>Decomposing the source using the proposed reference points.</td>
+    <td><code><a href="#define_line" class="internal-link" title="pod.projection.define_line">define<wbr></wbr>_line</a></code></td>
+    <td>Straight line in a n dim space given 2 points.</td>
   </tr><tr class="variable private">
     
     <td>Variable</td>
-    <td><code><a href="#_h" class="internal-link" title="pod._h">_h</a></code></td>
+    <td><code><a href="#_h" class="internal-link" title="pod.projection._h">_h</a></code></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="variable private">
     
     <td>Variable</td>
-    <td><code><a href="#_logger" class="internal-link" title="pod._logger">_logger</a></code></td>
+    <td><code><a href="#_logger" class="internal-link" title="pod.projection._logger">_logger</a></code></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr>
 </table>
+          
+
+            
         </div>
 
         <div id="childList">
-          <div class="basevariable private">
+          <div class="basefunction">
   
   
-  <a name="pod._h">
+  <a name="pod.projection.define_line">
+    
+  </a>
+  <a name="define_line">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">define_line</span><span class="function-signature">(p0: <code>Vector</code>, p1: <code>Vector</code>) -&gt; <code><a href="pod.projection.StraightLine.html" class="internal-link" title="pod.projection.StraightLine">StraightLine</a></code></span>:
+    
+    <a class="headerLink" href="#define_line" title="pod.projection.define_line">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Straight line in a n dim space given 2 points.</p></div>
+  </div>
+</div><div class="basevariable private">
+  
+  
+  <a name="pod.projection._h">
     
   </a>
   <a name="_h">
@@ -403,7 +487,7 @@
     
     <span class="py-defname">_h</span> =
     
-    <a class="headerLink" href="#_h" title="pod._h">
+    <a class="headerLink" href="#_h" title="pod.projection._h">
       
       
       ¶
@@ -417,7 +501,7 @@
 </div><div class="basevariable private">
   
   
-  <a name="pod._logger">
+  <a name="pod.projection._logger">
     
   </a>
   <a name="_logger">
@@ -427,7 +511,7 @@
     
     <span class="py-defname">_logger</span> =
     
-    <a class="headerLink" href="#_logger" title="pod._logger">
+    <a class="headerLink" href="#_logger" title="pod.projection._logger">
       
       
       ¶
@@ -437,57 +521,6 @@
     
     <div><p class="undocumented">Undocumented</p></div>
     
-  </div>
-</div><div class="basefunction">
-  
-  
-  <a name="pod.combined_distance">
-    
-  </a>
-  <a name="combined_distance">
-    
-  </a>
-  <div class="functionHeader">
-    
-    
-    <span class="py-keyword">def</span> <span class="py-defname">combined_distance</span><span class="function-signature">(generator_weight: <code>float</code>) -&gt; <code>Callable[<wbr></wbr>[<wbr></wbr>Vector, <wbr></wbr>Vector, <wbr></wbr>Vector, <wbr></wbr>float], <wbr></wbr>float]</code></span>:
-    
-    <a class="headerLink" href="#combined_distance" title="pod.combined_distance">
-      
-      
-      ¶
-    </a>
-  </div>
-  <div class="docstring functionBody">
-    
-    <div><p>Distance function used for ordering the projections.</p>
-<p>A weight of 0.0 defines the distance to the projected point, while a weight of 1.0 defines the distance relative to the point generating the line.</p>
-<p>At each iteration step the current point is projected onto the closest of all lines.</p>
-<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">generator<wbr></wbr>_weight:</span>float usually in range [0.0, 1.0]</td><td class="fieldArgDesc">how much weight is assigned to the generator point</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Callable[<wbr></wbr>[<wbr></wbr>Vector, <wbr></wbr>Vector, <wbr></wbr>Vector, <wbr></wbr>float], <wbr></wbr>float]</code></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table></div>
-  </div>
-</div><div class="basefunction">
-  
-  
-  <a name="pod.decompose">
-    
-  </a>
-  <a name="decompose">
-    
-  </a>
-  <div class="functionHeader">
-    
-    
-    <span class="py-keyword">def</span> <span class="py-defname">decompose</span><span class="function-signature">(source, references: <code>List[<wbr></wbr>List[<wbr></wbr>float]]</code>, epsilon=1e-10, max_iter=20, max_factors=None, max_weight=None)</span>:
-    
-    <a class="headerLink" href="#decompose" title="pod.decompose">
-      
-      
-      ¶
-    </a>
-  </div>
-  <div class="docstring functionBody">
-    
-    <div><p>Decomposing the source using the proposed reference points.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">source:</span>list</td><td class="fieldArgDesc">input point</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">references:</span>list</td><td class="fieldArgDesc">list of reference points</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">epsilon:</span>float</td><td class="fieldArgDesc">limit of the error sequence for stopping iteration</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">max<wbr></wbr>_iter:</span>int</td><td class="fieldArgDesc">safeguard for stopping iteration</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">max<wbr></wbr>_factors:</span>int</td><td class="fieldArgDesc">limit for the number of reference points, None allowing to use all of them</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">max<wbr></wbr>_weight</span></td><td class="fieldArgDesc"></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer">IterativeDecomposition</td><td class="fieldArgDesc">decomposition details</td></tr></table></div>
   </div>
 </div>
         </div>
