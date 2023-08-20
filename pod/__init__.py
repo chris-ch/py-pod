@@ -46,7 +46,7 @@ import os
 import logging
 from typing import Iterable, List
 
-from vecspace import define_line, VectorSpace
+from vecspace import define_line
 from linalg import create_vector_from_coordinates, Vector, zero
 from util import NullHandler
 

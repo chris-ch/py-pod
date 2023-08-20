@@ -1,3 +1,4 @@
 *.pyc
 .idea/
 py_pod.egg-info/
+dist/
