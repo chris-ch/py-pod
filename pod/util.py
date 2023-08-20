@@ -34,13 +34,9 @@ _h = NullHandler()
 _logger = logging.getLogger('util')
 _logger.addHandler(_h)
 
-def numbering(v):
-  """ Maps every element of to its position."""
-  return zip(range(len(v)), v)
-
 def prod_scalar(v1, v2):
   assert len(v1) == len(v2), 'input vectors must be of the same size'
-  prod = map(lambda x: x[0] * x[1], zip(v1, v2))
+  prod = [x[0] * x[1] for x in zip(v1, v2)]
   return sum(prod)
 
 def norm(v):

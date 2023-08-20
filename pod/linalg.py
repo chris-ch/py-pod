@@ -25,7 +25,6 @@ import os
 import logging
 
 from util import NullHandler
-from util import numbering
 from util import prod_scalar
 
 _h = NullHandler()
@@ -51,7 +50,7 @@ class Matrix(object):
   def get_value(self, i, j):
     assert i < self.get_dim_row(), 'row %d exceeding dimension %d' % (i, self.get_dim_row())
     assert j < self.get_dim_col(), 'column %d exceeding dimension %d' % (j, self.get_dim_col())
-    if self._vectors.has_key(i):
+    if i in self._vectors:
       v = self._vectors[i]
     else:
       v = self._create_vector()
@@ -89,14 +88,14 @@ class Matrix(object):
     msg = str(self.get_dimension())
     assert i < self.get_dim_row(), 'row %d exceeding dimension %s' % (i, msg)
     assert j < self.get_dim_col(), 'column %d exceeding dimension %s' % (j, msg)
-    if self._vectors.has_key(i):
+    if i in self._vectors:
       v = self._vectors[i]
     else:
       v = self._create_vector()
       self._vectors[i] = v
     try:
       v.set_component(j, float(val))
-    except TypeError, e:
+    except TypeError as e:
       logging.error('not a number: %s' % str(val))
       raise e
 
@@ -107,8 +106,8 @@ class Matrix(object):
     m = Matrix(self.get_dim_row() - 1, self.get_dim_col() - 1)
     dr = self.get_dim_row()
     dc = self.get_dim_col()
-    for k, i in numbering(range(0, r) + range(r+1, dr)):
-      for l, j in numbering(range(0, c) + range(c+1, dc)):
+    for k, i in enumerate((n for n in range(0, dr) if n != r)):
+      for l, j in enumerate((p for p in range(0, dc) if p != c)):
         v = self.get_value(i, j)
         m.set_value(k, l, v)
     return m
@@ -207,7 +206,7 @@ class Matrix(object):
       line = []
       for col in range(self.get_dim_col()):
         line.append(self.get_value(row, col))
-      out += ', '.join(map(str, line)) + os.linesep
+      out += ', '.join([str(field) for field in line]) + os.linesep
     return out
 
 class VectorMatrix(Matrix):
@@ -239,7 +238,7 @@ class Vector(object):
   
   def set_values(self, *values):
     """ Using specified values to initialize the vector. """
-    for n, v in numbering(values):
+    for n, v in enumerate(values):
       self.set_component(n, v)
     return self
   
@@ -250,7 +249,7 @@ class Vector(object):
   def get_component(self, i):
     assert i < self.get_length(), 'index %d exceeding dimension %d' % (i, self.get_length())
     assert i >= 0, 'non positive index %d' % i
-    if not self._values.has_key(i):
+    if i not in self._values:
       return 0.0
     else:
       return self._values[i]
@@ -317,7 +316,7 @@ class Vector(object):
     line = []
     for col in range(self.get_length()):
       line.append(self.get_component(col))
-    out = '(V)[' + ', '.join(map(str, line)) + ']'
+    out = '(V)[' + ', '.join([str(field) for field in line]) + ']'
     return out
     
   def __hash__(self):
@@ -335,7 +334,7 @@ class Point(Vector):
     line = []
     for col in range(self.get_length()):
       line.append(self.get_component(col))
-    out = '(P)[' + ', '.join(map(str, line)) + ']'
+    out = '(P)[' + ', '.join([str(field) for field in line]) + ']'
     return out
 
 def identity(dimension):

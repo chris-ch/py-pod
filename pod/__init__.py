@@ -214,7 +214,7 @@ class IterativeDecomposition(object):
         ref_weights = self.get_reference_weights()
         sorted_weights = [(pos - 1, weight)
                                 for pos, weight in enumerate(ref_weights)]
-        sorted_weights.sort(lambda w1, w2: cmp(abs(w2[1]), abs(w1[1])))
+        sorted_weights.sort(key=lambda x: abs(x[1]), reverse=True)
         max_abs_weight_pos = sorted_weights[rank][0]
         weight = sorted_weights[rank][1]
         main_component = self._reference_points[max_abs_weight_pos].scale(weight)
@@ -231,7 +231,7 @@ class IterativeDecomposition(object):
         ref_weights = self.get_reference_weights()
         sorted_weights = [(pos - 1, weight)
                                 for pos, weight in enumerate(ref_weights)]
-        sorted_weights.sort(lambda w1, w2: cmp(abs(w2[1]), abs(w1[1])))
+        sorted_weights.sort(key=lambda x: abs(x[1]), reverse=True)
         max_abs_weight_pos = sorted_weights[rank][0]
         return max_abs_weight_pos
     
@@ -299,10 +299,7 @@ class BaseDecomposition(IterativeDecomposition):
             return point
         
         # finds main driver (shortest distance to ref line)
-        def by_dist(ref1, ref2, d=distances):
-            return cmp(d[ref1], d[ref2])
-            
-        ref_points.sort(by_dist)
+        ref_points.sort(key=lambda x: distances[x])
         
         closest = ref_points[0]            
         additional_weight = projections[closest].units(closest)

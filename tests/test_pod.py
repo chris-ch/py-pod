@@ -207,16 +207,16 @@ class PodTest(unittest.TestCase):
        return output
      
     # x axis
-    x_axis = map(gen_x_axis, range(SAMPLING))
-      
+    x_axis = [gen_x_axis(value) for value in range(SAMPLING)]
+
     # input signal
-    y = map(square_signal, x_axis)
+    y = [square_signal(value) for value in x_axis]
     
     # creates set of sine and cosine functions
     
     y_i = []
     
-    freq_range = range(Decimal('-0.2') * N_REF, (Decimal('0.8') * N_REF))
+    freq_range = range(int(Decimal('-0.2') * N_REF), int(Decimal('0.8') * N_REF))
     
     for freq in freq_range:
       y_i.append(sine(AMPLITUTDE, float(FREQ_STEP * freq), x_axis))
@@ -238,9 +238,9 @@ class PodTest(unittest.TestCase):
     comp_1 = decomposition.get_principal_component(1)
     comp_2 = decomposition.get_principal_component(2)
     
-    self.assertEqual(decomposition.get_principal_component_index(0), 4)
-    self.assertEqual(decomposition.get_principal_component_index(1), 10)
-    self.assertEqual(decomposition.get_principal_component_index(2), 15)
+    self.assertEqual(4, decomposition.get_principal_component_index(0))
+    self.assertEqual(10, decomposition.get_principal_component_index(1))
+    self.assertEqual(15, decomposition.get_principal_component_index(2))
 
   def test_pseudo_fourier_decomposition_shift(self):
     x_axis, y, refs = self.prepare_fourier(-0.5 * math.pi)
