@@ -28,169 +28,174 @@ _h = util.NullHandler()
 _logger = logging.getLogger('vecspace')
 _logger.addHandler(_h)
 
+
 class VectorSpace(object):
-  """
-  Essentially a factory for geometrical objects.
-  
-  Joining an origin to a linear variety would create a VectorSpace.
-  """  
-  def __init__(self, dimension, basis=None):
-    self.dimension = dimension
-    self.origin = linalg.zero(dimension)
-    
-  def get_dimension(self):
-    return self.dimension
-    
-  def define_point(self, *coordinates):
-    return linalg.Point(*coordinates)
-  
-  def define_hyper_plane(self, *points):
-    hp = HyperPlane(self.dimension)
-    hp.init_points(*points)
-    return hp
-    
-  def define_line(self, p0, p1):
     """
-    Straight line in a n dim space given 2 points.
+    Essentially a factory for geometrical objects.
+
+    Joining an origin to a linear variety would create a VectorSpace.
     """
-    sl = StraightLine(self.dimension)
-    sl.init_points(p0, p1)
-    return sl
-    
-  def define_subspace(self, a):
-    return SubVectorSpace(self.dimension, a)
+
+    def __init__(self, dimension, basis=None):
+        self.dimension = dimension
+        self.origin = linalg.zero(dimension)
+
+    def get_dimension(self):
+        return self.dimension
+
+    def define_point(self, *coordinates):
+        return linalg.Point(*coordinates)
+
+    def define_hyper_plane(self, *points):
+        hp = HyperPlane(self.dimension)
+        hp.init_points(*points)
+        return hp
+
+    def define_line(self, p0, p1):
+        """
+        Straight line in a n dim space given 2 points.
+        """
+        sl = StraightLine(self.dimension)
+        sl.init_points(p0, p1)
+        return sl
+
 
 class VectorSpace3D(VectorSpace):
-  """
-  Specific Vector space in 3D.
-  """
-  
-  def __init__(self):
-    VectorSpace.__init__(self, 3)
-  
-  def define_plane(self, p1, p2, p3):
     """
-    Plane in a 3D space given 3 points.
+    Specific Vector space in 3D.
     """
-    return self.define_hyper_plane(p1, p2, p3)
+
+    def __init__(self):
+        VectorSpace.__init__(self, 3)
+
+    def define_plane(self, p1, p2, p3):
+        """
+        Plane in a 3D space given 3 points.
+        """
+        return self.define_hyper_plane(p1, p2, p3)
+
 
 class LinearVariety(object):
-  """
-  A linear variety (or linear manifold or affine subspace) 
-  of a vector space V is a subset closed under affine combinations 
-  of vectors in the space.
-  
-  See U{http://en.wikipedia.org/wiki/Affine_space}.
-  
-  In the words of mathematical physicist John Baez, "An affine space is a vector 
-  space that's forgotten its origin".
-  """
-  
-  def __init__(self, space_dimension):
     """
+    A linear variety (or linear manifold or affine subspace)
+    of a vector space V is a subset closed under affine combinations
+    of vectors in the space.
+
+    See U{http://en.wikipedia.org/wiki/Affine_space}.
+
+    In the words of mathematical physicist John Baez, "An affine space is a vector
+    space that's forgotten its origin".
     """
-    self.dimension = space_dimension
-    self.variety_dimension = 0
-    self.points = []
-      
-  def init_points(self, *points):
-    self.points = points
-    self.variety_dimension = len(points)
-  
-  def get_dimension(self):
-    """ Dimension of containing space.
-    """
-    return self.dimension
-    
-  def get_variety_dimension(self):
-    """ Dimension of linear variety.
-    """
-    return self.variety_dimension
-          
-  def project(self, point):
-    """
-    Generalizing projection onto induced subspace.
-    """
-    vectors = []
-    for i in range(1, len(self.points)):
-      vectors.append(self.points[i].sub(self.points[0]))
-    subspace = VectorSubspace(*vectors)
-    proj = subspace.project(point.sub(self.points[0]))
-    proj.projected = proj.projected.add(self.points[0])
-    return proj
-    
-  def __repr__(self):
-    out = str(self.points) 
-    return out
+
+    def __init__(self, space_dimension):
+        """
+        """
+        self.dimension = space_dimension
+        self.variety_dimension = 0
+        self.points = []
+
+    def init_points(self, *points):
+        self.points = points
+        self.variety_dimension = len(points)
+
+    def get_dimension(self):
+        """ Dimension of containing space.
+        """
+        return self.dimension
+
+    def get_variety_dimension(self):
+        """ Dimension of linear variety.
+        """
+        return self.variety_dimension
+
+    def project(self, point):
+        """
+        Generalizing projection onto induced subspace.
+        """
+        vectors = [
+            self.points[i].sub(self.points[0]) for i in range(1, len(self.points))
+        ]
+        subspace = VectorSubspace(*vectors)
+        proj = subspace.project(point.sub(self.points[0]))
+        proj.projected = proj.projected.add(self.points[0])
+        return proj
+
+    def __repr__(self):
+        return str(self.points)
+
 
 class VectorSubspace(object):
-  """
-  Defines a set on which we can project a point.
-  """
-  
-  def __init__(self, *points):
     """
-    Defining a n-subspace generated by n points.
+    Defines a set on which we can project a point.
     """
-    self.points = points
 
-  def project(self, point):
-    """
-    The solution implies (x - x*) perpendicular to each y[i]
-    with x* = sum( alpha[i] * y[i] )
-    and y[i]: points generating the subspace.
-    """
-    space_dim = point.get_length()
-    subspace_dim = len(self.points)
-    m = linalg.Matrix(subspace_dim)
-    for row in range(subspace_dim):
-      for column in range(row, subspace_dim):
-        value = self.points[row].product(self.points[column])
-        m.set_value(row, column, value)
-        if column != row:
-          m.set_value(column, row, value)
-    b = linalg.Vector(subspace_dim)
-    for row in range(subspace_dim):
-      value = point.product(self.points[row])
-      b.set_component(row, value)
-    alphas = util.system_solve(m.get_table(), b.get_data())
-    result = linalg.zero(space_dim)
-    for i in range(len(alphas)):
-      component = self.points[i].scale(alphas[i])
-      result = result.add(component)
-    return Projection(result, point)
-    
+    def __init__(self, *points):
+        """
+        Defining a n-subspace generated by n points.
+        """
+        self.points = points
+
+    def project(self, point):
+        """
+        The solution implies (x - x*) perpendicular to each y[i]
+        with x* = sum( alpha[i] * y[i] )
+        and y[i]: points generating the subspace.
+        """
+        space_dim = point.get_length()
+        subspace_dim = len(self.points)
+        m = linalg.Matrix(subspace_dim)
+        for row in range(subspace_dim):
+            for column in range(row, subspace_dim):
+                value = self.points[row].product(self.points[column])
+                m.set_value(row, column, value)
+                if column != row:
+                    m.set_value(column, row, value)
+        b = linalg.Vector(subspace_dim)
+        for row in range(subspace_dim):
+            value = point.product(self.points[row])
+            b.set_component(row, value)
+        alphas = util.system_solve(m.get_table(), b.get_data())
+        result = linalg.zero(space_dim)
+        for i in range(len(alphas)):
+            component = self.points[i].scale(alphas[i])
+            result = result.add(component)
+        return Projection(result, point)
+
+
 class Projection(object):
-  """
-  Simple container gathering details about projection.
-  """
-  def __init__(self, projected, start):
-    self.projected = projected
-    self.start = start
-    self.projector = projected.sub(start)
-    
+    """
+    Simple container gathering details about projection.
+    """
+
+    def __init__(self, projected, start):
+        self.projected = projected
+        self.start = start
+        self.projector = projected.sub(start)
+
+
 class StraightLine(LinearVariety):
-  """
-  Linear variety of dimension 1.
-  
-  It is defined by a (n-1) linear equations or 2 points.
-  """
-  def __init__(self, dim):
     """
-    @param dim: space dimension
+    Linear variety of dimension 1.
+
+    It is defined by a (n-1) linear equations or 2 points.
     """
-    LinearVariety.__init__(self, dim)
-    
+
+    def __init__(self, dim):
+        """
+        @param dim: space dimension
+        """
+        LinearVariety.__init__(self, dim)
+
+
 class HyperPlane(LinearVariety):
-  """
-  Linear variety of dimension (n-1).
-  
-  It is defined by a single linear equation.
-  """
-  
-  def __init__(self, dim):
     """
-    @param dim: space dimension
+    Linear variety of dimension (n-1).
+
+    It is defined by a single linear equation.
     """
-    LinearVariety.__init__(self, dim)
-    
+
+    def __init__(self, dim):
+        """
+        @param dim: space dimension
+        """
+        LinearVariety.__init__(self, dim)
