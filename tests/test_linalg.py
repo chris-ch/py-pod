@@ -19,7 +19,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 """
-
+import itertools
 import unittest
 
 from pod import linalg
@@ -120,8 +120,7 @@ class VecSpaceTest(unittest.TestCase):
         ]
         m.set_table(t)
         inv = m.inverse()
-        for i in [0, 1, 2]:
-            for j in [0, 1, 2]:
+        for i, j in itertools.product([0, 1, 2], [0, 1, 2]):
                 self.assertAlmostEqual(inv.get_table()[i][j], expected[i][j], 4)
 
     def test_invert_matrix2(self):

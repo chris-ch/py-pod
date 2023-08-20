@@ -111,10 +111,13 @@ class IterativeDecomposition(object):
     """
 
     def __init__(self, references, epsilon=1E-10, max_iter=20, max_factors=None):
-        assert len(references) > 0, 'at least one reference is required'
+        if len(references) <= 0:
+            raise ValueError('at least one reference is required')
+
         dim = len(references[0])
         for r in references:
-            assert len(r) == dim
+            if len(r) != dim:
+                raise ValueError('all references should have the same length')
 
         self._vector_space = vecspace.VectorSpace(dim)
         self._reference_points = []
