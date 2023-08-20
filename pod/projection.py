@@ -21,7 +21,7 @@ from __future__ import annotations
 import logging
 from typing import List
 
-from linalg import Vector, Matrix, zero
+from linalg import Vector, Matrix, zero, create_vector_from_coordinates
 import util
 
 _h = util.NullHandler()
@@ -36,9 +36,7 @@ def define_line(p0: Vector, p1: Vector) -> StraightLine:
     if p0.dimension != p1.dimension:
         raise ValueError(f'incompatible dimensions for {p0} and {p1}')
 
-    sl = StraightLine(p0.dimension)
-    sl.init_points(p0, p1)
-    return sl
+    return StraightLine(p0, p1)
 
 
 class StraightLine(object):
@@ -46,35 +44,25 @@ class StraightLine(object):
     Just a straight line.
     """
 
-    def __init__(self, space_dimension: int):
+    def __init__(self, p1: Vector, p2: Vector):
         """
         """
-        self._dimension = space_dimension
-        self.points = []
-
-    def init_points(self, p1: Vector, p2: Vector):
-        self.points = p1, p2
-
-    @property
-    def dimension(self) -> int:
-        """ Dimension of containing space.
-        """
-        return self._dimension
+        self._points = p1, p2
 
     def project(self, point: Vector) -> Projection:
         """
         Generalizing projection onto induced subspace.
         """
         vectors = [
-            self.points[i].sub(self.points[0]) for i in range(1, len(self.points))
+            self._points[i].sub(self._points[0]) for i in range(1, len(self._points))
         ]
         subspace = VectorSpace(*vectors)
-        proj = subspace.project(point.sub(self.points[0]))
-        proj.projected = proj.projected.add(self.points[0])
+        proj = subspace.project(point.sub(self._points[0]))
+        proj.projected = proj.projected.add(self._points[0])
         return proj
 
     def __repr__(self) -> str:
-        return str(self.points)
+        return str(self._points)
 
 
 class VectorSpace(object):
