@@ -88,7 +88,7 @@ class PodTest(unittest.TestCase):
         index1 = [0.8, 2.0]
         index2 = [1.2, -0.5]
         fund = [1.0, 0.5]
-        r = pod.DecompositionBasic(index1, index2, max_iter=20)
+        r = pod.BaseDecomposition([index1, index2], max_iter=20)
         replicate = r.resolve(fund)
 
         logging.debug(f'result: {r}')
@@ -104,7 +104,7 @@ class PodTest(unittest.TestCase):
         index1 = [0.8, 2.0, -5.0]
         index2 = [1.2, -0.5, -1.0]
         fund = [1.0, 0.5, 3.0]
-        r = pod.DecompositionBasic(index1, index2, max_iter=40)
+        r = pod.BaseDecomposition([index1, index2], max_iter=40)
         replicate = r.resolve(fund)
 
         logging.debug(f'result: {r}')

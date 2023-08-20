@@ -20,9 +20,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 """
 
+from __future__ import annotations
+
 import math
 import os
 import logging
+from typing import Optional, List
 
 from util import NullHandler
 from util import prod_scalar
@@ -34,7 +37,7 @@ _logger.addHandler(_h)
 
 class Matrix(object):
 
-    def __init__(self, dim_row, dim_col=None):
+    def __init__(self, dim_row: int, dim_col: Optional[int] = None):
         if dim_col is None:
             dim_col = dim_row
         self.dim_row = dim_row
@@ -93,7 +96,7 @@ class Matrix(object):
         try:
             v.set_component(j, float(val))
         except TypeError as e:
-            logging.error(f'not a number: {str(val)}')
+            logging.error(f'not a number: {val}')
             raise e
 
     def minor(self, r, c):
@@ -134,55 +137,6 @@ class Matrix(object):
     def multiply(self, m):
         return prod_matrix(self, m)
 
-    def sub(self, m):
-        msg = f'matrices with different dimensions ({self.get_dimension()} - {m.get_dimension()})'
-        assert m.get_dimension() == self.get_dimension(), msg
-        n = Matrix(self.get_dim_row(), self.get_dim_col())
-        for row in range(self.get_dim_row()):
-            for col in range(self.get_dim_col()):
-                v = self.get_value(row, col) - m.get_value(row, col)
-                n.set_value(row, col, v)
-        return n
-
-    def add(self, m):
-        assert m.get_dimension() == self.get_dimension(), 'incompatible dimensions'
-        n = Matrix(self.get_dim_row(), self.get_dim_col())
-        for row in range(self.get_dim_row()):
-            for col in range(self.get_dim_col()):
-                v = self.get_value(row, col) + m.get_value(row, col)
-                n.set_value(row, col, v)
-        return n
-
-    def scale(self, factor):
-        m = Matrix(self.get_dim_row(), self.get_dim_col())
-        for row in range(self.get_dim_row()):
-            for col in range(self.get_dim_col()):
-                v = self.get_value(row, col) * factor
-                m.set_value(row, col, v)
-        return m
-
-    def inverse(self):
-        if self.get_dimension() == (1, 1):
-            m = Matrix(1)
-            m.set_value(0, 0, 1.0 / self.get_value(0, 0))
-            return m
-        det_inv = 1.0 / self.determinant()
-        cofactors = self.cofactors()
-        cofactors = cofactors.transpose()
-        return cofactors.scale(det_inv)
-
-    def pseudo_inverse(self):
-        """
-        Full row rank pseudo inverse.
-
-        A+ = transp(A).inv(A.transp(A))
-        """
-        a = self
-        t_a = a.transpose()
-        a_t_a = a.multiply(t_a)
-        inv_a_transp_a = a_t_a.inverse()
-        return t_a.multiply(inv_a_transp_a)
-
     def copy(self):
         c = Matrix(self.get_dim_row(), self.get_dim_col())
         for row in range(self.get_dim_row()):
@@ -198,32 +152,16 @@ class Matrix(object):
         return out
 
 
-class VectorMatrix(Matrix):
-    """
-    Makes a vector compatible with Matrix operations.
-    """
-
-    def __init__(self, vector):
-        """
-        Column vector.
-
-        Use transpose() to turn it into a row vector.
-        """
-        Matrix.__init__(self, vector.get_length(), 1)
-        for row in range(vector.get_length()):
-            self.set_value(row, 0, vector.get_component(row))
-
-
 class Vector(object):
     """
-    @todo: should somehow be merged with VectorMatrix.
     """
 
-    def __init__(self, dim):
+    def __init__(self, dim: int):
         self._dim = dim
         self._values = {}
 
-    def get_length(self):
+    @property
+    def dimension(self) -> int:
         return self._dim
 
     def set_values(self, *values):
@@ -236,49 +174,49 @@ class Vector(object):
         """ Using raw data (python list) to initialize the vector. """
         self.set_values(*data)
 
-    def get_component(self, i):
-        assert i < self.get_length(), 'index %d exceeding dimension %d' % (i, self.get_length())
+    def get_component(self, i: int) -> float:
+        assert i < self.dimension, 'index %d exceeding dimension %d' % (i, self.dimension)
         assert i >= 0, 'non positive index %d' % i
         return 0.0 if i not in self._values else self._values[i]
 
-    def set_component(self, i, v):
-        assert i < self.get_length(), 'index %d exceeding dimension %d' % (i, self.get_length())
+    def set_component(self, i: int, v: float) -> None:
+        assert i < self.dimension, 'index %d exceeding dimension %d' % (i, self.dimension)
         assert i >= 0, 'non positive index %d' % i
         self._values[i] = v
 
-    def get_data(self):
+    def get_data(self) -> List[float]:
         """ Raw data as built-in python list."""
-        return [self.get_component(i) for i in range(self.get_length())]
+        return [self.get_component(i) for i in range(self.dimension)]
 
-    def sub(self, vector):
-        result = Vector(self.get_length())
-        for i in range(self.get_length()):
+    def sub(self, vector: Vector) -> Vector:
+        result = Vector(self.dimension)
+        for i in range(self.dimension):
             result.set_component(i, self.get_component(i) - vector.get_component(i))
         return result
 
-    def add(self, vector):
-        result = Vector(self.get_length())
-        for i in range(self.get_length()):
+    def add(self, vector: Vector) -> Vector:
+        result = Vector(self.dimension)
+        for i in range(self.dimension):
             result.set_component(i, self.get_component(i) + vector.get_component(i))
         return result
 
-    def scale(self, a):
-        result = Vector(self.get_length())
-        for i in range(self.get_length()):
+    def scale(self, a: float) -> Vector:
+        result = Vector(self.dimension)
+        for i in range(self.dimension):
             result.set_component(i, a * self.get_component(i))
         return result
 
-    def product(self, vector):
+    def product(self, vector: Vector) -> float:
         return prod_scalar(vector.get_data(), self.get_data())
 
-    def norm(self):
+    def norm(self) -> float:
         return math.sqrt(self.product(self))
 
-    def symmetric(self):
-        null_vector = Vector(self.get_length())
+    def symmetric(self) -> Vector:
+        null_vector = Vector(self.dimension)
         return null_vector.sub(self)
 
-    def units(self, unit_vector):
+    def units(self, unit_vector: Vector) -> float:
         """
         How many times the current vector fits in the specified units (in norm).
 
@@ -290,47 +228,32 @@ class Vector(object):
             ratio = -ratio
         return ratio
 
-    def __eq__(self, other):
+    def __eq__(self, other: Vector) -> bool:
         return self._values == other._values
 
-    def __ne__(self, other):
+    def __ne__(self, other: Vector) -> bool:
         return self._values != other._values
 
-    def __repr__(self):
-        line = [self.get_component(col) for col in range(self.get_length())]
+    def __repr__(self) -> str:
+        line = [self.get_component(col) for col in range(self.dimension)]
         return '(V)[' + ', '.join([str(field) for field in line]) + ']'
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(tuple(self.get_data()))
 
 
-class Point(Vector):
-    """
-    Equivalent to a Vector
-    """
-
-    def __init__(self, *coordinates):
-        Vector.__init__(self, len(coordinates))
-        self.set_values(*coordinates)
-
-    def __repr__(self):
-        line = [self.get_component(col) for col in range(self.get_length())]
-        return '(P)[' + ', '.join([str(field) for field in line]) + ']'
+def create_vector_from_coordinates(*coordinates: List[float]) -> Vector:
+    vector = Vector(len(coordinates))
+    vector.set_values(*coordinates)
+    return vector
 
 
-def identity(dimension):
-    matrix = Matrix(dimension)
-    for i in range(dimension):
-        matrix.set_value(i, i, 1.0)
-    return matrix
-
-
-def zero(dimension):
+def zero(dimension: int) -> Vector:
     zeros = [0.0] * dimension
-    return Point(*zeros)
+    return create_vector_from_coordinates(*zeros)
 
 
-def prod_matrix(m1, m2):
+def prod_matrix(m1: Matrix, m2: Matrix) -> Matrix:
     msg = f'incompatible dimensions: {m1.get_dimension()} x {m2.get_dimension()}'
     assert m1.get_dim_col() == m2.get_dim_row(), msg
     result = Matrix(m1.get_dim_row(), m2.get_dim_col())

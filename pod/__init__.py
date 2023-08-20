@@ -40,12 +40,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 """
-__all__ = ['decompose', 'combined_distance', 'DecompositionBasic']
+__all__ = ['decompose', 'combined_distance']
 
 import os
 import logging
+from typing import Iterable, List
 
-import vecspace
+from vecspace import define_line, VectorSpace
+from linalg import create_vector_from_coordinates, Vector, zero
 from util import NullHandler
 
 _h = NullHandler()
@@ -78,8 +80,7 @@ def combined_distance(generator_weight):
 
 def decompose(source, references,
               epsilon=1E-10, max_iter=20,
-              max_factors=None, max_weight=None,
-              distance=combined_distance(0.0)
+              max_factors=None, max_weight=None
               ):
     """
     Decomposing the source using the proposed reference points.
@@ -95,8 +96,6 @@ def decompose(source, references,
     @type max_iter: int
     @param max_factors: limit for the number of reference points, None allowing to use all of them
     @type max_factors: int
-    @param distance: function used for finding the closest line to project on
-    @type distance: a function of start point, projected point, generator point
     @return: decomposition details
     @rtype: IterativeDecomposition
     """
@@ -114,16 +113,15 @@ class IterativeDecomposition(object):
         if len(references) <= 0:
             raise ValueError('at least one reference is required')
 
-        dim = len(references[0])
+        self._dim = len(references[0])
         for r in references:
-            if len(r) != dim:
+            if len(r) != self._dim:
                 raise ValueError('all references should have the same length')
 
-        self._vector_space = vecspace.VectorSpace(dim)
         self._reference_points = []
         self._ignores = []
         for count, r in enumerate(references):
-            ref = self._vector_space.define_point(*r)
+            ref = create_vector_from_coordinates(*r)
             if ref in self._reference_points:
                 logging.warning('filtered out redundant reference %d' % count)
                 self._ignores.append(ref)
@@ -153,13 +151,13 @@ class IterativeDecomposition(object):
         @return: the current relicate
         @rtype: linalg.Point
         """
-        decomposition = self._vector_space.origin
+        decomposition = zero(self._dim)
         for d in self._weights.keys():
             w_d = self._weights[d]
             decomposition = decomposition.add(d.scale(w_d))
         return decomposition
 
-    def resolve(self, point):
+    def resolve(self, point: List[float]):
         """
         Iterates decomposition until convergence or max iteration is reached.
         
@@ -186,8 +184,7 @@ class IterativeDecomposition(object):
         Returns the weights assigned to the references in order to construct the
         proposed input.
         """
-        return [self._weights[self._reference_points[i]]
-                for i in range(len(self._reference_points))]
+        return [self._weights[self._reference_points[i]] for i in range(len(self._reference_points))]
 
     def get_decomposition(self):
         """
@@ -207,7 +204,7 @@ class IterativeDecomposition(object):
         """
         return self._compute_decomposition().sub(self._start).norm()
 
-    def get_principal_component(self, rank):
+    def get_principal_component(self, rank: int):
         """
         Returns the rank-th reference influencing the input variable
         (main component: rank = 0), multiplied by its assigned weight.
@@ -224,7 +221,7 @@ class IterativeDecomposition(object):
         main_component = self._reference_points[max_abs_weight_pos].scale(weight)
         return main_component.get_data()
 
-    def get_principal_component_index(self, rank):
+    def get_principal_component_index(self, rank: int) -> int:
         """
         Returns the position in the initial reference list of the rank-th 
         reference influencing the input variable (main component: rank = 0).
@@ -233,8 +230,7 @@ class IterativeDecomposition(object):
         @return: position in the initial reference list
         """
         ref_weights = self.get_reference_weights()
-        sorted_weights = [(pos - 1, weight)
-                          for pos, weight in enumerate(ref_weights)]
+        sorted_weights = [(pos - 1, weight) for pos, weight in enumerate(ref_weights)]
         sorted_weights.sort(key=lambda x: abs(x[1]), reverse=True)
         return sorted_weights[rank][0]
 
@@ -265,12 +261,12 @@ class BaseDecomposition(IterativeDecomposition):
         self._max_weight = max_weight
         self._distance = distance
 
-    def _project_point(self, point, reference_points):
+    def _project_point(self, point: Vector, reference_points: Iterable[Vector]) -> Vector:
         """ Projects onto the closest of the straight lines defined by 
         the reference points.
         """
         # computes projection of source point to each subspace defined by ref points
-        origin = self._vector_space.origin
+        origin = zero(self._dim)
         if point.sub(origin).norm() <= self._epsilon:
             # already matched: do nothing
             return point
@@ -279,7 +275,7 @@ class BaseDecomposition(IterativeDecomposition):
         projections = {}
         distances = {}
         for ref in reference_points:
-            line = self._vector_space.define_line(ref, origin)
+            line = define_line(ref, origin)
             # _logger.debug('computing projection onto ' + str(line))
             ref_proj = line.project(point)
             projections[ref] = ref_proj.projected
@@ -311,7 +307,7 @@ class BaseDecomposition(IterativeDecomposition):
 
         return point.sub(projections[closest])
 
-    def resolve(self, point):
+    def resolve(self, point: List[float]):
         """
         Iterates decomposition until convergence or max iteration is reached.
         
@@ -322,7 +318,7 @@ class BaseDecomposition(IterativeDecomposition):
         """
         IterativeDecomposition.resolve(self, point)
         _logger.debug(' ------------- STARTING PROCESS -------------')
-        target = self._vector_space.define_point(*point)
+        target = create_vector_from_coordinates(*point)
         self._start = target
         reference_points = [ref for ref in self._reference_points if ref not in self._ignores]
         projector = self._project_point(target, reference_points)
@@ -355,9 +351,3 @@ class BaseDecomposition(IterativeDecomposition):
         if decomposition:
             _logger.debug(f'diff:{decomposition.sub(target)}')
         return decomposition.get_data()
-
-
-class DecompositionBasic(BaseDecomposition):
-
-    def __init__(self, ref1, ref2, max_iter):
-        BaseDecomposition.__init__(self, [ref1, ref2], max_iter=max_iter)

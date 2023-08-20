@@ -104,56 +104,6 @@ class VecSpaceTest(unittest.TestCase):
         m.set_value(1, 1, -5.0)
         self.assertEqual(m.determinant(), -17)
 
-    def test_invert_matrix1(self):
-        m = linalg.Matrix(4)
-        t = [
-            [1.0, 2.0, 4.0, 5.0],
-            [-1.0, 0.0, 3.0, 4.0],
-            [3.0, 4.0, 4.0, 4.0],
-            [-2.0, -1.0, 4.0, 5.0]
-        ]
-        expected = [
-            [2.6667e+00, -4.0000e+00, -1.0000e+00, 1.3333e+00],
-            [-2.3333e+00, 4.0000e+00, 1.0000e+00, -1.6667e+00],
-            [-1.3333e+00, -1.0000e+00, 1.0000e+00, 1.3333e+00],
-            [1.6667e+00, 8.8832e-16, -1.0000e+00, -6.6667e-01]
-        ]
-        m.set_table(t)
-        inv = m.inverse()
-        for i, j in itertools.product([0, 1, 2], [0, 1, 2]):
-                self.assertAlmostEqual(inv.get_table()[i][j], expected[i][j], 4)
-
-    def test_invert_matrix2(self):
-        m = linalg.Matrix(2)
-        m.set_value(0, 0, 2.0)
-        m.set_value(0, 1, -3.0)
-        m.set_value(1, 0, 4.0)
-        m.set_value(1, 1, -7.0)
-        expected = [
-            [3.5, -1.5],
-            [2.0, -1.0]
-        ]
-        inv = m.inverse()
-        self.assertEqual(inv.get_table(), expected)
-
-    def test_invert_matrix3(self):
-        m = linalg.Matrix(3)
-        t = [
-            [1, 2, 3],
-            [0, 4, 5],
-            [1, 0, 6]
-        ]
-        expected = [
-            [12.0 / 11.0, -6.0 / 11.0, -1.0 / 11.0],
-            [5.0 / 22.0, 3.0 / 22.0, -5.0 / 22.0],
-            [-2 / 11.0, 1.0 / 11.0, 2.0 / 11.0]
-        ]
-        m.set_table(t)
-        inv = m.inverse()
-        for i in [0, 1, 2]:
-            for j in [0, 1, 2]:
-                self.assertAlmostEqual(inv.get_table()[i][j], expected[i][j], 6)
-
 
 if __name__ == '__main__':
     unittest.main()

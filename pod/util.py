@@ -93,14 +93,3 @@ def system_solve(M, b):
     """
     m2 = [row[:] + [right] for row, right in zip(M, b)]
     return [row[-1] for row in m2] if gauss_jordan(m2) else None
-
-
-def mat_inverse(M):
-    """
-    @return: the inverse of the matrix M
-    """
-    # clone the matrix and append the identity matrix
-    # [int(i==j) for j in range_M] is nothing but the i(th row of the identity matrix
-    m2 = [row[:] + [int(i == j) for j in range(len(M))] for i, row in enumerate(M)]
-    # extract the appended matrix (kind of m2[m:,...]
-    return [row[len(M[0]):] for row in m2] if gauss_jordan(m2) else None
