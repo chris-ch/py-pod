@@ -1,3 +1,6 @@
+# Proper Orthogonal Decomposition
+
+## Principle
 The pod package is an implementation of a Proper Orthogonal Decomposition (POD)
 method. The POD method intention is close to the more commonly known 
 Principal Component Analysis  (PCA). The package contains processing 
@@ -16,3 +19,7 @@ synthetize or approximate any kind of input. The reference points form a
 cloud in the space described above. A linear combination of appropriately 
 selected reference points will approximate the target signal *S*.
 
+## Documentation
+Generated with PyDoctor:
+
+`pydoctor --make-html --html-output=docs/api pod`

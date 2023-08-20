@@ -1,7 +1,7 @@
 """
 Test cases for the linalg package.
 
-@author: Christophe Alexandre <ch.alexandre at bluewin dot ch>
+@author: Christophe Alexandre <christophe.alexandre at pm dot me>
 
 @license:
 Copyright(C) 2010 Christophe Alexandre

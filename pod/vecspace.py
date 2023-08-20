@@ -1,10 +1,7 @@
 """
 Toolbox for handling projections onto linear varieties.
 
-@author: Christophe Alexandre <ch.alexandre at bluewin dot ch>
-
-@license:
-Copyright(C) 2010 Christophe Alexandre
+@author: Christophe Alexandre <christophe.alexandre at pm dot me>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by

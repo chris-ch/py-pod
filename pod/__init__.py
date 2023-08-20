@@ -13,19 +13,16 @@ Usage example:
 >>>          [3.0, 4.0] ]
 >>> target = [-2.0, 1.5]
 >>> decomposition = pod.decompose(target, refs, epsilon=1E-6, max_iter=90)
->>> print decomposition.get_decomposition()
+>>> print(decomposition.get_decomposition())
 [-1.9999991745134178, 1.4999993808850638]
->>> print decomposition.get_reference_weights()
+>>> print(decomposition.get_reference_weights())
 [0.96153806466991254, 0.0, 0.61538436138874408]
 
 The example above shows the reconstruction of the target using 3 reference
 signals, from which only reference 1 and reference 3 are useful (reference 2
 is assigned a weight of 0).
 
-@author: Christophe Alexandre <ch.alexandre at bluewin dot ch>
-
-@license:
-Copyright(C) 2010 Christophe Alexandre
+@author: Christophe Alexandre <christophe.alexandre at pm dot me>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
