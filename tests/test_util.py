@@ -21,30 +21,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 """
 
 import unittest
-import math
-import logging
 
 from pod import util
 
+
 class UtilTest(unittest.TestCase):
-  
-  def test_prod_scalar(self):
-    v1 = [1.0, 2.0, 2.0]
-    v2 = [1.0, -2.0, 1.0]
-    self.assertEqual(util.prod_scalar(v1, v2), -1.0)
-    
-  def test_scalar_fail(self):
-    v1 = [1.0, 2.0, 2.0]
-    v2 = [1.0, -2.0, 1.0, 0.5]
-    try:
-      x = util.prod_scalar(v1, v2)
-    except AssertionError:
-      return
-    self.fail()
-    
-  def test_norm(self):
-    v = [1.0, 2.0, 2.0]
-    self.assertEqual(util.norm(v), 3.0)
-    
+
+    def test_prod_scalar(self):
+        v1 = [1.0, 2.0, 2.0]
+        v2 = [1.0, -2.0, 1.0]
+        self.assertEqual(util.prod_scalar(v1, v2), -1.0)
+
+    def test_scalar_fail(self):
+        v1 = [1.0, 2.0, 2.0]
+        v2 = [1.0, -2.0, 1.0, 0.5]
+        try:
+            util.prod_scalar(v1, v2)
+        except ValueError:
+            return
+        self.fail()
+
+    def test_norm(self):
+        v = [1.0, 2.0, 2.0]
+        self.assertEqual(util.norm(v), 3.0)
+
+
 if __name__ == '__main__':
     unittest.main()

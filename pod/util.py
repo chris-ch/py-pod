@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 import itertools
 import math
 import logging
+from typing import List
 
 
 class NullHandler(logging.Handler):
@@ -37,10 +38,12 @@ _logger = logging.getLogger('util')
 _logger.addHandler(_h)
 
 
-def prod_scalar(v1, v2):
-    assert len(v1) == len(v2), 'input vectors must be of the same size'
+def prod_scalar(v1: List[float], v2: List[float]) -> float:
+    if len(v1) != len(v2):
+        raise ValueError(f'input vectors {v1} and {v2} must be of the same size, currently {len(v1)} and {len(v2)} respectively)')
     prod = [x[0] * x[1] for x in zip(v1, v2)]
     return sum(prod)
+
 
 
 def norm(v):

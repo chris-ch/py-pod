@@ -227,7 +227,7 @@ class IterativeDecomposition(object):
         @return: position in the initial reference list
         """
         ref_weights = self.get_reference_weights()
-        sorted_weights = [(pos - 1, weight) for pos, weight in enumerate(ref_weights)]
+        sorted_weights = list(enumerate(ref_weights))
         sorted_weights.sort(key=lambda x: abs(x[1]), reverse=True)
         return sorted_weights[rank][0]
 
@@ -250,7 +250,7 @@ class BaseDecomposition(IterativeDecomposition):
                  max_iter: int = 20,
                  max_factors: Optional[int] = None,
                  max_weight: Optional[float] = None,
-                 distance: float = combined_distance(0.0)):
+                 distance: Callable[[Vector, Vector, Vector], float] = combined_distance(0.0)):
         """
         @param distance: function of start point, projected point and generator point
         """

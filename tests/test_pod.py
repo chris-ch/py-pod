@@ -199,27 +199,31 @@ class PodTest(unittest.TestCase):
         replicate = replication.get_decomposition()
         s_expected = [-2.0, 1.5]
         for i in range(len(s_expected)):
-            self.assertAlmostEqual(replicate[i], s_expected[i], 3)
-        self.assertAlmostEqual(replication.get_reference_weight(0), 0.961538, 4)
-        self.assertAlmostEqual(replication.get_reference_weight(1), 0.0, 4)
-        self.assertAlmostEqual(replication.get_reference_weight(2), 0.61538, 4)
-        self.assertAlmostEqual(replication.get_error_norm(), 0.0, 4)
+            self.assertAlmostEqual(s_expected[i], replicate[i], 3)
+        self.assertAlmostEqual(0.961538, replication.get_reference_weight(0), 4)
+        self.assertAlmostEqual(0.0, replication.get_reference_weight(1), 4)
+        self.assertAlmostEqual(0.61538, replication.get_reference_weight(2), 4)
+        self.assertAlmostEqual(0.0, replication.get_error_norm(), 4)
+
+        self.assertEqual(0, replication.get_principal_component_index(0))
+        self.assertEqual(2, replication.get_principal_component_index(1))
+        self.assertEqual(1, replication.get_principal_component_index(2))
 
     def test_pseudo_fourier_decomposition(self):
         x_axis, y, refs = prepare_fourier(0.0)
         # computes decomposition
         decomposition = pod.decompose(y, refs, epsilon=1E-6, max_iter=20)
-        self.assertEqual(4, decomposition.get_principal_component_index(0))
-        self.assertEqual(10, decomposition.get_principal_component_index(1))
-        self.assertEqual(15, decomposition.get_principal_component_index(2))
+        self.assertEqual(5, decomposition.get_principal_component_index(0))
+        self.assertEqual(11, decomposition.get_principal_component_index(1))
+        self.assertEqual(16, decomposition.get_principal_component_index(2))
 
     def test_pseudo_fourier_decomposition_shift(self):
         x_axis, y, refs = prepare_fourier(-0.5 * math.pi)
         # computes decomposition
         decomposition = pod.decompose(y, refs, epsilon=1E-6, max_iter=20)
-        self.assertEqual(decomposition.get_principal_component_index(0), 8)
-        self.assertEqual(decomposition.get_principal_component_index(1), 0)
-        self.assertEqual(decomposition.get_principal_component_index(2), 50)
+        self.assertEqual(9, decomposition.get_principal_component_index(0))
+        self.assertEqual(1, decomposition.get_principal_component_index(1))
+        self.assertEqual(51, decomposition.get_principal_component_index(2))
 
 
 if __name__ == '__main__':
