@@ -43,9 +43,9 @@ import os
 import logging
 from typing import Iterable, List, Callable, Optional
 
-from projection import define_line
-from linalg import create_vector_from_coordinates, Vector, zero
-from util import NullHandler
+from pod.projection import define_line
+from pod.linalg import create_vector_from_coordinates, Vector, zero
+from pod.util import NullHandler
 
 _h = NullHandler()
 _logger = logging.getLogger('pod')

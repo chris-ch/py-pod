@@ -24,8 +24,8 @@ import os
 import logging
 from typing import Optional, List
 
-from util import NullHandler
-from util import prod_scalar
+from pod.util import NullHandler
+from pod.util import prod_scalar
 
 _h = NullHandler()
 _logger = logging.getLogger('linalg')

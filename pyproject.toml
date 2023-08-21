@@ -1,14 +1,13 @@
 [tool.poetry]
 name = "py-pod"
-version = "1.0.2"
+version = "1.0.5"
 description = "Implementation of a Proper Orthogonal Decomposition (POD) method"
 authors = ["Christophe <christophe.alexandre@pm.me>"]
 readme = "README.md"
 packages = [{include = "pod"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
-numpy = "^1.25.2"
+python = "^3.10"
 pydoctor = "^23.4.1"
 
 

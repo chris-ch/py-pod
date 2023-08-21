@@ -24,3 +24,9 @@ selected reference points will approximate the target signal *S*.
 Generated with PyDoctor:
 
 `pydoctor --make-html --html-output=docs/api pod`
+
+
+## Publication
+`poetry build`
+
+`poetry publish`

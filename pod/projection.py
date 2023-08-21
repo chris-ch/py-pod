@@ -21,8 +21,8 @@ from __future__ import annotations
 import logging
 from typing import List
 
-from linalg import Vector, Matrix, zero, create_vector_from_coordinates
-import util
+from pod.linalg import Vector, Matrix, zero
+from pod import util
 
 _h = util.NullHandler()
 _logger = logging.getLogger('vecspace')
