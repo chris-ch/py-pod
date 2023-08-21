@@ -369,6 +369,22 @@ files = [
 ]
 
 [[package]]
+name = "nose2"
+version = "0.13.0"
+description = "unittest with plugins"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "nose2-0.13.0-py3-none-any.whl", hash = "sha256:e29017c9309fe2c8b8a1f1db7a0e7526acaba0c3990f32a0d961e6a7bc5cc190"},
+    {file = "nose2-0.13.0.tar.gz", hash = "sha256:57c68ad676ef4b88b50694937eb52f4943aa1ca261074b4909b6e163046b46f0"},
+]
+
+[package.extras]
+coverage-plugin = ["coverage"]
+dev = ["Sphinx", "sphinx-issues", "sphinx-rtd-theme"]
+
+[[package]]
 name = "pydoctor"
 version = "23.4.1"
 description = "API doc generator."
@@ -609,4 +625,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "c7d1e606615887f8d7cc38568c69f0c2d48d1dc2985fd053c97714fee9136697"
+content-hash = "33396c27a1a1de82829e6ca15673ae452d5c8c851eaac85aa0e39076c8825957"

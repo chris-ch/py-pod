@@ -37,41 +37,18 @@ GNU General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 """
-__all__ = ['decompose', 'combined_distance']
+__all__ = ['decompose']
 
 import os
 import logging
-from typing import Iterable, List, Callable, Optional
+from typing import Iterable, List, Optional
 
-from pod.projection import define_line
 from pod.linalg import create_vector_from_coordinates, Vector, zero
 from pod.util import NullHandler
 
 _h = NullHandler()
 _logger = logging.getLogger('pod')
 _logger.addHandler(_h)
-
-
-def combined_distance(generator_weight: float) -> Callable[[Vector, Vector, Vector, float], float]:
-    """
-    Distance function used for ordering the projections.
-
-    A weight of 0.0 defines the distance to the projected point, while a weight
-    of 1.0 defines the distance relative to the point generating the line.
-
-    At each iteration step the current point is projected onto the closest of
-    all lines.
-
-    @param generator_weight: how much weight is assigned to the generator point
-    @type generator_weight: float usually in range [0.0, 1.0]
-    """
-
-    def func(start_point: Vector, projected_point: Vector, generator_point: Vector, w=generator_weight) -> float:
-        d1 = start_point.sub(generator_point).norm()
-        d2 = start_point.sub(projected_point).norm()
-        return w * d1 + (1.0 - w) * d2
-
-    return func
 
 
 def decompose(source, references: List[List[float]],
@@ -145,7 +122,7 @@ class IterativeDecomposition(object):
         """
         Computes current decomposition result on the fly.
         
-        @return: the current relicate
+        @return: the current remainder
         @rtype: linalg.Point
         """
         decomposition = zero(self._dim)
@@ -249,36 +226,23 @@ class BaseDecomposition(IterativeDecomposition):
                  epsilon: float = 1E-10,
                  max_iter: int = 20,
                  max_factors: Optional[int] = None,
-                 max_weight: Optional[float] = None,
-                 distance: Callable[[Vector, Vector, Vector], float] = combined_distance(0.0)):
+                 max_weight: Optional[float] = None):
         """
         @param distance: function of start point, projected point and generator point
         """
         IterativeDecomposition.__init__(self, references, epsilon, max_iter, max_factors)
         self._max_weight = max_weight
-        self._distance = distance
 
     def _project_point(self, point: Vector, reference_points: Iterable[Vector]) -> Vector:
         """ Projects onto the closest of the straight lines defined by 
         the reference points.
         """
         # computes projection of source point to each subspace defined by ref points
-        origin = zero(self._dim)
-        if point.sub(origin).norm() <= self._epsilon:
+        if point.norm() <= self._epsilon:
             # already matched: do nothing
             return point
 
-        # _logger.debug('projecting ' + str(point))
-        projections = {}
-        distances = {}
-        for ref in reference_points:
-            line = define_line(ref, origin)
-            # _logger.debug('computing projection onto ' + str(line))
-            ref_proj = line.project(point)
-            projections[ref] = ref_proj.projected
-            distances[ref] = self._distance(point, ref_proj.projected, ref)
-            _logger.debug('distance to reference %.3f' % distances[ref])
-
+        projections = {ref: ref.scale(point.product(ref) / ref.product(ref)) for ref in reference_points}
         ref_points = []
         for p in reference_points:
             if self._max_weight is None:
@@ -295,12 +259,11 @@ class BaseDecomposition(IterativeDecomposition):
             return point
 
         # finds main driver (shortest distance to ref line)
-        ref_points.sort(key=lambda x: distances[x])
+        ref_points.sort(key=lambda ref_point: point.sub(projections[ref_point]).norm())
 
         closest = ref_points[0]
-        additional_weight = projections[closest].units(closest)
-        self._weights[closest] += additional_weight
-        _logger.debug('closest driver: %s, weight=%f' % (str(closest), self._weights[closest]))
+        self._weights[closest] += projections[closest].units(closest)
+        _logger.debug(f'closest driver: {closest}, weight={self._weights[closest]:f}')
 
         return point.sub(projections[closest])
 

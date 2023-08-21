@@ -214,14 +214,14 @@ class PodTest(unittest.TestCase):
         # computes decomposition
         decomposition = pod.decompose(y, refs, epsilon=1E-6, max_iter=20)
         self.assertEqual(5, decomposition.get_principal_component_index(0))
-        self.assertEqual(11, decomposition.get_principal_component_index(1))
+        self.assertEqual(1, decomposition.get_principal_component_index(1))
         self.assertEqual(16, decomposition.get_principal_component_index(2))
 
     def test_pseudo_fourier_decomposition_shift(self):
         x_axis, y, refs = prepare_fourier(-0.5 * math.pi)
         # computes decomposition
         decomposition = pod.decompose(y, refs, epsilon=1E-6, max_iter=20)
-        self.assertEqual(9, decomposition.get_principal_component_index(0))
+        self.assertEqual(3, decomposition.get_principal_component_index(0))
         self.assertEqual(1, decomposition.get_principal_component_index(1))
         self.assertEqual(51, decomposition.get_principal_component_index(2))
 

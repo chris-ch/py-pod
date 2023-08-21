@@ -9,6 +9,7 @@ packages = [{include = "pod"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 pydoctor = "^23.4.1"
+nose2 = "^0.13.0"
 
 
 [build-system]

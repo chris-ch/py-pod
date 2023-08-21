@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 """
 
 
-import itertools
 import math
 import logging
 from typing import List
@@ -43,53 +42,3 @@ def prod_scalar(v1: List[float], v2: List[float]) -> float:
         raise ValueError(f'input vectors {v1} and {v2} must be of the same size, currently {len(v1)} and {len(v2)} respectively)')
     prod = [x[0] * x[1] for x in zip(v1, v2)]
     return sum(prod)
-
-
-
-def norm(v):
-    return math.sqrt(prod_scalar(v, v))
-
-
-def gauss_jordan(m, eps=1E-10):
-    """
-    Puts given matrix (2D array) into the Reduced Row Echelon Form.
-
-    NOTE: make sure all the matrix items support fractions! Int matrix will NOT work!
-    Written by Jarno Elonen in April 2005, released into Public Domain
-
-    @return: True if successful, False if 'm' is singular.
-    """
-    (h, w) = (len(m), len(m[0]))
-    for y in range(h):
-        maxrow = y
-        for y2 in range(y + 1, h):  # Find max pivot
-            if abs(m[y2][y]) > abs(m[maxrow][y]):
-                maxrow = y2
-        (m[y], m[maxrow]) = (m[maxrow], m[y])
-        if abs(m[y][y]) <= eps:  # Singular?
-            return False
-        for y2 in range(y + 1, h):  # Eliminate column y
-            c = m[y2][y] / m[y][y]
-            for x in range(y, w):
-                m[y2][x] -= m[y][x] * c
-    for y in range(h - 1, 0 - 1, -1):  # Backsubstitute
-        c = m[y][y]
-        for y2, x in itertools.product(range(y), range(w - 1, y - 1, -1)):
-            m[y2][x] -= m[y][x] * m[y2][y] / c
-        m[y][y] /= c
-        for x in range(h, w):  # Normalize row y
-            m[y][x] /= c
-    return True
-
-
-# Auxiliary functions contribution by Eric Atienza
-
-def system_solve(M, b):
-    """
-    solves M*x = b
-    @param M: a matrix in the form of a list of list
-    @param b: a vector in the form of a simple list of scalars
-    @return: vector x so that M*x = b
-    """
-    m2 = [row[:] + [right] for row, right in zip(M, b)]
-    return [row[-1] for row in m2] if gauss_jordan(m2) else None

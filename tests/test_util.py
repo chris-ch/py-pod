@@ -41,10 +41,6 @@ class UtilTest(unittest.TestCase):
             return
         self.fail()
 
-    def test_norm(self):
-        v = [1.0, 2.0, 2.0]
-        self.assertEqual(util.norm(v), 3.0)
-
 
 if __name__ == '__main__':
     unittest.main()
