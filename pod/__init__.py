@@ -118,7 +118,7 @@ class IterativeDecomposition(object):
 
         self._error_norm = None
 
-    def _compute_decomposition(self):
+    def _compute_decomposition(self) -> Vector:
         """
         Computes current decomposition result on the fly.
         

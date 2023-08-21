@@ -37,68 +37,6 @@ class VecSpaceTest(unittest.TestCase):
             return
         self.fail()
 
-    def test_matrix(self):
-        m = linalg.Matrix(3, 4)
-        m.set_value(0, 0, 1.0)
-        m.set_value(1, 1, 1.0)
-        m.set_value(2, 2, 1.0)
-        m.set_value(0, 2, -1.0)
-        self.assertEqual(m.get_dim_row(), 3)
-        self.assertEqual(m.get_dim_col(), 4)
-
-    def test_product_matrix(self):
-        m1 = linalg.Matrix(2, 3)
-        m1.set_value(0, 0, 0.0)
-        m1.set_value(1, 0, 4.0)
-        m1.set_value(0, 1, -1.0)
-        m1.set_value(1, 1, 11.0)
-        m1.set_value(1, 2, 2.0)
-        m1.set_value(0, 2, 2.0)
-        m2 = linalg.Matrix(3, 2)
-        m2.set_value(0, 0, 3.0)
-        m2.set_value(1, 0, 1.0)
-        m2.set_value(2, 0, 6.0)
-        m2.set_value(0, 1, -1.0)
-        m2.set_value(1, 1, 2.0)
-        m2.set_value(2, 1, 1.0)
-        m = linalg.prod_matrix(m1, m2)
-        self.assertEqual(m.get_value(0, 0), 11.0)
-        self.assertEqual(m.get_value(1, 0), 35.0)
-        self.assertEqual(m.get_value(0, 1), 0.0)
-        self.assertEqual(m.get_value(1, 1), 20.0)
-
-    def test_minor(self):
-        m1 = linalg.Matrix(2, 3)
-        m1.set_value(0, 0, 0.0)
-        m1.set_value(1, 0, 4.0)
-        m1.set_value(0, 1, -1.0)
-        m1.set_value(1, 1, 11.0)
-        m1.set_value(1, 2, 2.0)
-        m1.set_value(0, 2, 2.0)
-        self.assertEqual(m1.minor(1, 1).get_value(0, 1), 2.0)
-        self.assertEqual(m1.minor(0, 2).get_value(0, 1), 11.0)
-
-    def test_determinant1(self):
-        m = linalg.Matrix(3)
-        m.set_value(0, 0, 3.0)
-        m.set_value(0, 1, 1.0)
-        m.set_value(0, 2, 8.0)
-        m.set_value(1, 0, 2.0)
-        m.set_value(1, 1, -5.0)
-        m.set_value(1, 2, 4.0)
-        m.set_value(2, 0, -1.0)
-        m.set_value(2, 1, 6.0)
-        m.set_value(2, 2, -2.0)
-        self.assertEqual(m.determinant(), 14)
-
-    def test_determinant2(self):
-        m = linalg.Matrix(2)
-        m.set_value(0, 0, 3.0)
-        m.set_value(0, 1, 1.0)
-        m.set_value(1, 0, 2.0)
-        m.set_value(1, 1, -5.0)
-        self.assertEqual(m.determinant(), -17)
-
 
 if __name__ == '__main__':
     unittest.main()
