@@ -1,4 +1,7 @@
 
+version 2.0
+-----------
+Switched to numpy
 
 version 1.0
 -----------

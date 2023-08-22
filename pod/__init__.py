@@ -43,12 +43,7 @@ import os
 import logging
 from typing import Iterable, List, Optional
 
-from pod.linalg import create_vector_from_coordinates, Vector, zero
-from pod.util import NullHandler
-
-_h = NullHandler()
-_logger = logging.getLogger('pod')
-_logger.addHandler(_h)
+import numpy
 
 
 def decompose(source, references: List[List[float]],
@@ -84,7 +79,7 @@ class IterativeDecomposition(object):
 
     def __init__(self, references: List[List[float]], epsilon: float = 1E-10,
                  max_iter: int = 20, max_factors: Optional[int] = None):
-        if len(references) <= 0:
+        if not references:
             raise ValueError('at least one reference is required')
 
         self._dim = len(references[0])
@@ -92,21 +87,21 @@ class IterativeDecomposition(object):
             if len(r) != self._dim:
                 raise ValueError('all references should have the same length')
 
-        self._reference_points = []
+        self._reference_points: List[numpy.ndarray] = []
         self._ignores = []
         for count, r in enumerate(references):
-            ref = create_vector_from_coordinates(*r)
-            if ref in self._reference_points:
-                logging.warning('filtered out redundant reference %d' % count)
-                self._ignores.append(ref)
+            ref = numpy.array(r)
+            if ref.tolist() in (item.tolist() for item in self._reference_points):
+                logging.warning(f'filtered out redundant reference {count:d}')
+                self._ignores.append(ref.tolist())
 
-            elif ref.norm() == 0.0:
-                logging.warning('filtered out reference at origin %d' % count)
-                self._ignores.append(ref)
+            elif numpy.linalg.norm(ref) == 0.0:
+                logging.warning(f'filtered out reference at origin {count:d}')
+                self._ignores.append(ref.tolist())
 
             self._reference_points.append(ref)
 
-        self._weights = {p: 0.0 for p in self._reference_points}
+        self._weights = numpy.zeros(len(self._reference_points))
         self._epsilon = epsilon
         self._start = None
         self._max_iter = max_iter
@@ -118,18 +113,11 @@ class IterativeDecomposition(object):
 
         self._error_norm = None
 
-    def _compute_decomposition(self) -> Vector:
+    def _compute_decomposition(self) -> numpy.ndarray:
         """
         Computes current decomposition result on the fly.
-        
-        @return: the current remainder
-        @rtype: linalg.Point
         """
-        decomposition = zero(self._dim)
-        for d in self._weights.keys():
-            w_d = self._weights[d]
-            decomposition = decomposition.add(d.scale(w_d))
-        return decomposition
+        return numpy.matmul(self._weights, self._reference_points)
 
     def resolve(self, point: List[float]):
         """
@@ -150,33 +138,32 @@ class IterativeDecomposition(object):
         @param position: position of the reference in the list provided in the constructor
         @type position: int
         """
-        ref = self._reference_points[position]
-        return self._weights[ref]
+        return sorted(self._weights, reverse=True)[self.get_principal_component_index(position)]
 
-    def get_reference_weights(self):
+    def get_reference_weights(self) -> numpy.ndarray:
         """
         Returns the weights assigned to the references in order to construct the
         proposed input.
         """
-        return [self._weights[self._reference_points[i]] for i in range(len(self._reference_points))]
+        return self._weights
 
-    def get_decomposition(self):
+    def get_decomposition(self) -> numpy.ndarray:
         """
         Returns the result of the decomposition process.
         
         @return: decomposition result
         @rtype: list
         """
-        return self._compute_decomposition().get_data()
+        return self._compute_decomposition()
 
-    def get_error_norm(self):
+    def get_error_norm(self) -> float:
         """
         Returns a measure of the decomposition error.
         
         @return: length of the difference between the result and the initial point
         @rtype: float
         """
-        return self._compute_decomposition().sub(self._start).norm()
+        return numpy.linalg.norm(numpy.subtract(self._compute_decomposition(), self._start))
 
     def get_principal_component(self, rank: int):
         """
@@ -187,13 +174,12 @@ class IterativeDecomposition(object):
         @return: a reference vector
         """
         ref_weights = self.get_reference_weights()
-        sorted_weights = [(pos - 1, weight)
-                          for pos, weight in enumerate(ref_weights)]
+        sorted_weights = [(pos - 1, weight) for pos, weight in enumerate(ref_weights)]
         sorted_weights.sort(key=lambda x: abs(x[1]), reverse=True)
         max_abs_weight_pos = sorted_weights[rank][0]
         weight = sorted_weights[rank][1]
-        main_component = self._reference_points[max_abs_weight_pos].scale(weight)
-        return main_component.get_data()
+        main_component = numpy.multiply(self._reference_points[max_abs_weight_pos], weight)
+        return main_component.to_list()
 
     def get_principal_component_index(self, rank: int) -> int:
         """
@@ -227,87 +213,98 @@ class BaseDecomposition(IterativeDecomposition):
                  max_iter: int = 20,
                  max_factors: Optional[int] = None,
                  max_weight: Optional[float] = None):
-        """
-        @param distance: function of start point, projected point and generator point
-        """
         IterativeDecomposition.__init__(self, references, epsilon, max_iter, max_factors)
         self._max_weight = max_weight
 
-    def _project_point(self, point: Vector, reference_points: Iterable[Vector]) -> Vector:
+    def _project_point(self, point: numpy.ndarray, reference_points_indices: Iterable[int]) -> numpy.ndarray:
         """ Projects onto the closest of the straight lines defined by 
         the reference points.
         """
         # computes projection of source point to each subspace defined by ref points
-        if point.norm() <= self._epsilon:
+        if numpy.linalg.norm(point) <= self._epsilon:
             # already matched: do nothing
             return point
 
-        projections = {ref: ref.scale(point.product(ref) / ref.product(ref)) for ref in reference_points}
-        ref_points = []
-        for p in reference_points:
+        def project(point: numpy.ndarray, support: numpy.ndarray) -> numpy.ndarray:
+            return numpy.multiply(support, numpy.dot(point, support)) / numpy.dot(support, support)
+
+        def units(vector: numpy.ndarray, unit_vector: numpy.ndarray) -> float:
+            """
+            How many times the vector fits in the specified units (in norm).
+
+            The sign is meaningful only if both vectors are colinear.
+            """
+            ratio = numpy.linalg.norm(vector) / numpy.linalg.norm(unit_vector)
+            if numpy.linalg.norm(numpy.subtract(vector, unit_vector)) > numpy.linalg.norm(unit_vector):
+                # vectors are in opposite directions
+                ratio = -ratio
+            return ratio
+
+        ref_points_indices = []
+        for count in reference_points_indices:
             if self._max_weight is None:
-                ref_points.append(p)
+                ref_points_indices.append(count)
 
             else:
-                additional_weight = projections[p].units(p)
-                suggested_weight = self._weights[p] + additional_weight
+                additional_weight = units(project(point, self._reference_points[count]), self._reference_points[count])
+                suggested_weight = self._weights[count] + additional_weight
                 if abs(suggested_weight) < self._max_weight:
-                    ref_points.append(p)
+                    ref_points_indices.append(count)
 
-        if not ref_points:
+        if not ref_points_indices:
             # no eligible point left
             return point
 
         # finds main driver (shortest distance to ref line)
-        ref_points.sort(key=lambda ref_point: point.sub(projections[ref_point]).norm())
+        distances = numpy.array([numpy.linalg.norm(numpy.subtract(point, project(point, self._reference_points[ref_point_index]))) for ref_point_index in ref_points_indices])
 
-        closest = ref_points[0]
-        self._weights[closest] += projections[closest].units(closest)
-        _logger.debug(f'closest driver: {closest}, weight={self._weights[closest]:f}')
+        closest_position = numpy.argmin(distances)
+        closest_point = self._reference_points[ref_points_indices[closest_position]]
+        projected = project(point, closest_point)
+        self._weights[ref_points_indices[closest_position]] += units(projected, closest_point)
+        logging.debug(f'closest driver: {str(closest_point)}, weight={str(self._weights[ref_points_indices[closest_position]])}')
 
-        return point.sub(projections[closest])
+        return numpy.subtract(point, projected)
 
     def resolve(self, point: List[float]):
         """
         Iterates decomposition until convergence or max iteration is reached.
         
-        @param point: coordinates of the point to be decompositiond
+        @param point: coordinates of the point to decompose
         @type point: list
-        @return: coordinates of decompositiond point
+        @return: coordinates of decomposed point
         @rtype: list
         """
         IterativeDecomposition.resolve(self, point)
-        _logger.debug(' ------------- STARTING PROCESS -------------')
-        target = create_vector_from_coordinates(*point)
-        self._start = target
-        reference_points = [ref for ref in self._reference_points if ref not in self._ignores]
-        projector = self._project_point(target, reference_points)
+        logging.debug(' ------------- STARTING PROCESS -------------')
+        self._start = numpy.array(point)
+        reference_points_indices: List[int] = [count for count, ref in enumerate(self._reference_points) if ref.tolist() not in self._ignores]
+        projector = self._project_point(numpy.array(point), reference_points_indices)
         diff = None
-        _logger.debug('distance to projection: %f' % projector.norm())
-        # _logger.debug('drivers: ' + str(self._weights))
+        logging.debug(f'distance to projection: {numpy.linalg.norm(projector):f}')
         i = 0
         decomposition = None
         while (diff is None) or (diff > self._epsilon and i < self._max_iter):
             i += 1
             previous = self._compute_decomposition()
-            _logger.debug(' ------------- ITERATION %d -------------' % i)
-            projector = self._project_point(projector, reference_points)
-            enabled_drivers = [p for p in self._weights.keys() if abs(self._weights[p]) > 0.0]
+            logging.debug(' ------------- ITERATION %d -------------' % i)
+            projector = self._project_point(projector, reference_points_indices)
+
+            enabled_drivers = [count for count in reference_points_indices if abs(self._weights[count]) > 0.0]
             drivers_count = len(enabled_drivers)
-            _logger.debug('number of drivers: %d' % drivers_count)
+            logging.debug(f'number of drivers: {drivers_count:d}')
             if drivers_count >= self._max_factors:
                 # limits number of drivers
-                _logger.debug('count limit reached for drivers: %d' % self._max_factors)
-                reference_points = enabled_drivers
+                logging.debug('count limit reached for drivers: %d' % self._max_factors)
+                reference_points_indices = enabled_drivers
 
             decomposition = self._compute_decomposition()
-            diff = decomposition.sub(previous).norm()
-            _logger.debug('improvement: %f' % diff)
-            _logger.debug('distance to projection: %f' % projector.norm())
-            # _logger.debug('drivers: ' + str(self._weights))
-            _logger.debug(f'decomposition: {str(decomposition)}')
+            diff = numpy.linalg.norm(numpy.subtract(decomposition, previous))
+            logging.debug('improvement: %f' % diff)
+            logging.debug(f'distance to projection: {numpy.linalg.norm(projector):f}')
+            logging.debug(f'decomposition: {str(decomposition)}')
 
-        _logger.debug(f'start:{target}')
-        if decomposition:
-            _logger.debug(f'diff:{decomposition.sub(target)}')
-        return decomposition.get_data()
+        logging.debug(f'start:{numpy.array(point)}')
+        if decomposition.any():
+            logging.debug(f'diff:{numpy.subtract(decomposition, numpy.array(point))}')
+        return decomposition.tolist()

@@ -91,10 +91,9 @@ class PodTest(unittest.TestCase):
         r = pod.BaseDecomposition([index1, index2], max_iter=20)
         replicate = r.resolve(fund)
 
-        logging.debug(f'result: {r}')
         s_expected = [1.0, 0.5]
         for i in range(len(s_expected)):
-            self.assertAlmostEqual(replicate[i], s_expected[i], 3)
+            self.assertAlmostEqual(s_expected[i], replicate[i], 3)
 
     def test_decompose_002(self):
         """
@@ -110,7 +109,7 @@ class PodTest(unittest.TestCase):
         logging.debug(f'result: {r}')
         s_expected = [-0.265192, -0.961998, 2.2127700]
         for i in range(len(s_expected)):
-            self.assertAlmostEqual(replicate[i], s_expected[i], 4)
+            self.assertAlmostEqual(s_expected[i], replicate[i], 4)
 
     def test_decompose_003(self):
         """
@@ -128,7 +127,7 @@ class PodTest(unittest.TestCase):
         logging.debug(f'result: {result}')
         s_expected = [1.6, 4.0, -2.0]
         for i in range(len(s_expected)):
-            self.assertAlmostEqual(result[i], s_expected[i], 6)
+            self.assertAlmostEqual(s_expected[i], result[i], 6)
 
     def test_decompose_004(self):
         """
@@ -144,6 +143,8 @@ class PodTest(unittest.TestCase):
         result = r.resolve(fund)
 
         logging.debug(f'result: {r}')
+        self.assertAlmostEqual(2., r.get_reference_weight(0))
+        self.assertAlmostEqual(-1., r.get_reference_weight(1))
         s_expected = [-3.4, 7.0, -2.4]
         for i in range(len(s_expected)):
             self.assertAlmostEqual(result[i], s_expected[i], 6)
@@ -200,14 +201,36 @@ class PodTest(unittest.TestCase):
         s_expected = [-2.0, 1.5]
         for i in range(len(s_expected)):
             self.assertAlmostEqual(s_expected[i], replicate[i], 3)
+
         self.assertAlmostEqual(0.961538, replication.get_reference_weight(0), 4)
         self.assertAlmostEqual(0.0, replication.get_reference_weight(1), 4)
         self.assertAlmostEqual(0.61538, replication.get_reference_weight(2), 4)
+
         self.assertAlmostEqual(0.0, replication.get_error_norm(), 4)
 
         self.assertEqual(0, replication.get_principal_component_index(0))
         self.assertEqual(2, replication.get_principal_component_index(1))
         self.assertEqual(1, replication.get_principal_component_index(2))
+
+    def test_decompose_008(self):
+        """
+        Decomposing 1 index with 3 assets, 2 time samples,
+        minimizing L2 norm in weights space.
+        """
+        assets = [[-4.0, -1.0], [-2.0, -1.0], [3.0, 4.0]]
+        #
+        # target
+        index = [-2.0, 1.5]
+        #
+        replication = pod.decompose(index, assets, epsilon=1E-6, max_iter=90, max_factors=3, max_weight=0.5)
+        replicate = replication.get_decomposition()
+        s_expected = [-1.036, 0.777]
+        for i in range(len(s_expected)):
+            self.assertAlmostEqual(s_expected[i], replicate[i], 3)
+
+        self.assertAlmostEqual(0.3824, replication.get_reference_weight(0), 4)
+        self.assertAlmostEqual(0.3012, replication.get_reference_weight(1), 4)
+        self.assertAlmostEqual(0.3652, replication.get_reference_weight(2), 4)
 
     def test_pseudo_fourier_decomposition(self):
         x_axis, y, refs = prepare_fourier(0.0)

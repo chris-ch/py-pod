@@ -285,16 +285,6 @@
         
 
         
-            <div class="itemName"><code><a href="#_distance" class="internal-link" title="pod.BaseDecomposition._distance">_distance</a></code>
-            </div>
-        
-
-    </li><li class="private">
-        
-        
-        
-
-        
             <div class="itemName"><code><a href="#_max_weight" class="internal-link" title="pod.BaseDecomposition._max_weight">_max<wbr></wbr>_weight</a></code>
             </div>
         
@@ -409,41 +399,8 @@
       <div>
         
 
-        <div class="childrenKindTitle">Modules</div>
-        <ul>
-    
-    <li class="">
         
-        
-        
-
-        
-            <div class="itemName"><code><a href="pod.linalg.html" class="internal-link" title="pod.linalg">linalg</a></code>
-            </div>
-        
-
-    </li><li class="">
-        
-        
-        
-
-        
-            <div class="itemName"><code><a href="pod.projection.html" class="internal-link" title="pod.projection">projection</a></code>
-            </div>
-        
-
-    </li><li class="">
-        
-        
-        
-
-        
-            <div class="itemName"><code><a href="pod.util.html" class="internal-link" title="pod.util">util</a></code>
-            </div>
-        
-
-    </li>
-</ul> 
+         
 
         <div class="childrenKindTitle">Classes</div>
         <ul>
@@ -480,16 +437,6 @@
         
 
         
-            <div class="itemName"><code><a href="index.html#combined_distance" class="internal-link" title="pod.combined_distance">combined<wbr></wbr>_distance</a></code>
-            </div>
-        
-
-    </li><li class="">
-        
-        
-        
-
-        
             <div class="itemName"><code><a href="index.html#decompose" class="internal-link" title="pod.decompose">decompose</a></code>
             </div>
         
@@ -500,31 +447,8 @@
         
          
 
-        <div class="childrenKindTitle">Variables</div>
-        <ul>
-    
-    <li class="private">
         
-        
-        
-
-        
-            <div class="itemName"><code><a href="index.html#_h" class="internal-link" title="pod._h">_h</a></code>
-            </div>
-        
-
-    </li><li class="private">
-        
-        
-        
-
-        
-            <div class="itemName"><code><a href="index.html#_logger" class="internal-link" title="pod._logger">_logger</a></code>
-            </div>
-        
-
-    </li>
-</ul> 
+         
 
         
          
@@ -559,7 +483,7 @@
         </div>
 
         <div class="extrasDocstring">
-          <p class="class-signature"><code><span class="py-keyword">class</span> <span class="py-defname">BaseDecomposition</span>(<a href="pod.IterativeDecomposition.html" class="internal-link" title="pod.IterativeDecomposition">IterativeDecomposition</a>):</code></p><p>Constructor: <code><a href="#__init__" class="internal-link" title="pod.BaseDecomposition.__init__">BaseDecomposition(references, epsilon, max_iter, max_factors, ...)</a></code></p>
+          <p class="class-signature"><code><span class="py-keyword">class</span> <span class="py-defname">BaseDecomposition</span>(<a href="pod.IterativeDecomposition.html" class="internal-link" title="pod.IterativeDecomposition">IterativeDecomposition</a>):</code></p><p>Constructor: <code><a href="#__init__" class="internal-link" title="pod.BaseDecomposition.__init__">BaseDecomposition(references, epsilon, max_iter, max_factors, max_weight)</a></code></p>
           <p><a href="classIndex.html#pod.BaseDecomposition">View In Hierarchy</a></p>
         </div>
 
@@ -568,14 +492,14 @@
         </div>
 
         <div id="splitTables">
-          <table class="children sortable" id="id13">
+          <table class="children sortable" id="id3">
   
   
   <tr class="method">
     
     <td>Method</td>
     <td><code><a href="#__init__" class="internal-link" title="pod.BaseDecomposition.__init__">__init__</a></code></td>
-    <td><span class="undocumented">No summary</span></td>
+    <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="method">
     
     <td>Method</td>
@@ -586,11 +510,6 @@
     <td>Method</td>
     <td><code><a href="#_project_point" class="internal-link" title="pod.BaseDecomposition._project_point">_project<wbr></wbr>_point</a></code></td>
     <td>Projects onto the closest of the straight lines defined by the reference points.</td>
-  </tr><tr class="instancevariable private">
-    
-    <td>Instance Variable</td>
-    <td><code><a href="#_distance" class="internal-link" title="pod.BaseDecomposition._distance">_distance</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="instancevariable private">
     
     <td>Instance Variable</td>
@@ -607,7 +526,7 @@
             <p class="inheritedFrom">
               Inherited from <code><a href="pod.IterativeDecomposition.html" class="internal-link" title="pod.IterativeDecomposition">IterativeDecomposition</a></code>:
             </p>
-            <table class="children sortable" id="id14">
+            <table class="children sortable" id="id4">
   
   
   <tr class="basemethod">
@@ -710,7 +629,7 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">__init__</span><span class="function-signature">(self, references, epsilon: <code>float</code> = 1e-10, max_iter: <code>int</code> = 20, max_factors: <code>Optional[<wbr></wbr>int]</code> = None, max_weight: <code>Optional[<wbr></wbr>float]</code> = None, distance: <code>Callable[<wbr></wbr>[<wbr></wbr><a href="pod.linalg.Vector.html" class="internal-link" title="pod.linalg.Vector">Vector</a>, <wbr></wbr><a href="pod.linalg.Vector.html" class="internal-link" title="pod.linalg.Vector">Vector</a>, <wbr></wbr><a href="pod.linalg.Vector.html" class="internal-link" title="pod.linalg.Vector">Vector</a>], <wbr></wbr>float]</code> = <a href="index.html#combined_distance" class="internal-link" title="pod.combined_distance">combined_distance</a>(<wbr></wbr>0.0))</span>:
+    <span class="py-keyword">def</span> <span class="py-defname">__init__</span><span class="function-signature">(self, references, epsilon: <code>float</code> = 1e-10, max_iter: <code>int</code> = 20, max_factors: <code>Optional[<wbr></wbr>int]</code> = None, max_weight: <code>Optional[<wbr></wbr>float]</code> = None)</span>:
     
     <a class="headerLink" href="#__init__" title="pod.BaseDecomposition.__init__">
       
@@ -720,7 +639,7 @@
   </div>
   <div class="docstring functionBody">
     <div class="interfaceinfo">overrides <code><a href="pod.IterativeDecomposition.html#__init__" class="internal-link">pod.IterativeDecomposition.__init__</a></code></div>
-    <div><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">references</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">epsilon:</span><code>float</code></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">max<wbr></wbr>_iter:</span><code>int</code></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">max<wbr></wbr>_factors:</span><code>Optional[<wbr></wbr>int]</code></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">max<wbr></wbr>_weight:</span><code>Optional[<wbr></wbr>float]</code></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">distance:</span><code>Callable[<wbr></wbr>[<wbr></wbr><a href="pod.linalg.Vector.html" class="internal-link" title="pod.linalg.Vector">Vector</a>, <wbr></wbr><a href="pod.linalg.Vector.html" class="internal-link" title="pod.linalg.Vector">Vector</a>, <wbr></wbr><a href="pod.linalg.Vector.html" class="internal-link" title="pod.linalg.Vector">Vector</a>], <wbr></wbr>float]</code></td><td class="fieldArgDesc">function of start point, projected point and generator point</td></tr></table></div>
+    <div><p class="undocumented">Undocumented</p></div>
   </div>
 </div><div class="basemethod">
   
@@ -744,7 +663,7 @@
   </div>
   <div class="docstring functionBody">
     <div class="interfaceinfo">overrides <code><a href="pod.IterativeDecomposition.html#resolve" class="internal-link">pod.IterativeDecomposition.resolve</a></code></div>
-    <div><p>Iterates decomposition until convergence or max iteration is reached.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">point:</span>list</td><td class="fieldArgDesc">coordinates of the point to be decompositiond</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer">list</td><td class="fieldArgDesc">coordinates of decompositiond point</td></tr></table></div>
+    <div><p>Iterates decomposition until convergence or max iteration is reached.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">point:</span>list</td><td class="fieldArgDesc">coordinates of the point to decompose</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer">list</td><td class="fieldArgDesc">coordinates of decomposed point</td></tr></table></div>
   </div>
 </div><div class="basemethod private">
   
@@ -758,7 +677,7 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">_project_point</span><span class="function-signature">(self, point: <code><a href="pod.linalg.Vector.html" class="internal-link" title="pod.linalg.Vector">Vector</a></code>, reference_points: <code>Iterable[<wbr></wbr><a href="pod.linalg.Vector.html" class="internal-link" title="pod.linalg.Vector">Vector</a>]</code>) -&gt; <code><a href="pod.linalg.Vector.html" class="internal-link" title="pod.linalg.Vector">Vector</a></code></span>:
+    <span class="py-keyword">def</span> <span class="py-defname">_project_point</span><span class="function-signature">(self, point: <code>numpy.ndarray</code>, reference_points_indices: <code>Iterable[<wbr></wbr>int]</code>) -&gt; <code>numpy.ndarray</code></span>:
     
     <a class="headerLink" href="#_project_point" title="pod.BaseDecomposition._project_point">
       
@@ -769,30 +688,6 @@
   <div class="docstring functionBody">
     
     <div><p>Projects onto the closest of the straight lines defined by the reference points.</p></div>
-  </div>
-</div><div class="baseinstancevariable private">
-  
-  
-  <a name="pod.BaseDecomposition._distance">
-    
-  </a>
-  <a name="_distance">
-    
-  </a>
-  <div class="functionHeader">
-    
-    <span class="py-defname">_distance</span> =
-    
-    <a class="headerLink" href="#_distance" title="pod.BaseDecomposition._distance">
-      
-      
-      ¶
-    </a>
-  </div>
-  <div class="functionBody">
-    
-    <div><p class="undocumented">Undocumented</p></div>
-    
   </div>
 </div><div class="baseinstancevariable private">
   
@@ -854,7 +749,7 @@
   <div class="container">
     <a href="index.html">API Documentation</a> for pod,
   generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-    23.4.1 at 2023-08-21 18:34:32.
+    23.4.1 at 2023-08-22 11:45:31.
   </div>
 
   <!-- Search related scripts needs to be loaded at the end of HTML 
