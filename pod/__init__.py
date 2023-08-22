@@ -93,11 +93,11 @@ class IterativeDecomposition(object):
             ref = numpy.array(r)
             if ref.tolist() in (item.tolist() for item in self._reference_points):
                 logging.warning(f'filtered out redundant vector {count:d}')
-                self._ignores.append(ref.tolist())
+                self._ignores.append(count)
 
             elif numpy.linalg.norm(ref) == 0.0:
                 logging.warning(f'filtered out vector at origin {count:d}')
-                self._ignores.append(ref.tolist())
+                self._ignores.append(count)
 
             self._reference_points.append(ref)
 
@@ -138,7 +138,7 @@ class IterativeDecomposition(object):
         @param position: position of the reference in the list provided in the constructor
         @type position: int
         """
-        return sorted(self._weights, reverse=True)[self.get_principal_component_index(position)]
+        return self._weights[self.get_principal_component_index(position)]
 
     @property
     def reference_weights(self) -> numpy.ndarray:
@@ -279,7 +279,12 @@ class BaseDecomposition(IterativeDecomposition):
         IterativeDecomposition.resolve(self, point)
         logging.debug(' ------------- STARTING PROCESS -------------')
         self._start = numpy.array(point)
-        reference_points_indices: List[int] = [count for count, ref in enumerate(self._reference_points) if ref.tolist() not in self._ignores]
+        reference_points_indices = []
+        for count, ref in enumerate(self._reference_points):
+            if count not in self._ignores:
+                reference_points_indices.append(count)
+            else:
+                logging.info(f'ignoring #{count}: {ref}')
         projector = self._project_point(numpy.array(point), reference_points_indices)
         diff = None
         logging.debug(f'distance to projection: {numpy.linalg.norm(projector):f}')
@@ -288,7 +293,7 @@ class BaseDecomposition(IterativeDecomposition):
         while (diff is None) or (diff > self._epsilon and i < self._max_iter):
             i += 1
             previous = self._compute_decomposition()
-            logging.debug(' ------------- ITERATION %d -------------' % i)
+            logging.debug(f' ------------- ITERATION {i:d} -------------')
             projector = self._project_point(projector, reference_points_indices)
 
             enabled_drivers = [count for count in reference_points_indices if abs(self._weights[count]) > 0.0]

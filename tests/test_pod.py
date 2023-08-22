@@ -30,9 +30,8 @@ import pod
 logging.basicConfig(level=logging.DEBUG)
 
 
-def prepare_fourier(shift):
-    N_REF = 30
-    SAMPLING = 5 * N_REF
+def prepare_fourier(shift, n_ref=30):
+    SAMPLING = 5 * n_ref
     AMPLITUTDE = 100.0
     FREQ_STEP = 0.2
     PHASE_SHIFT = shift
@@ -61,7 +60,7 @@ def prepare_fourier(shift):
 
     y_i = []
 
-    freq_range = range(int(Decimal('-0.2') * N_REF), int(Decimal('0.8') * N_REF))
+    freq_range = range(int(Decimal('-0.2') * n_ref), int(Decimal('0.8') * n_ref))
 
     for freq in freq_range:
         y_i.append(sine(AMPLITUTDE, float(FREQ_STEP * freq), x_axis))
@@ -203,8 +202,8 @@ class PodTest(unittest.TestCase):
             self.assertAlmostEqual(s_expected[i], replicate[i], 3)
 
         self.assertAlmostEqual(0.961538, replication.get_reference_weight(0), 4)
-        self.assertAlmostEqual(0.0, replication.get_reference_weight(1), 4)
-        self.assertAlmostEqual(0.61538, replication.get_reference_weight(2), 4)
+        self.assertAlmostEqual(0.6154, replication.get_reference_weight(1), 4)
+        self.assertAlmostEqual(0.0, replication.get_reference_weight(2), 4)
 
         self.assertAlmostEqual(0.0, replication.get_error_norm(), 4)
 
@@ -229,8 +228,8 @@ class PodTest(unittest.TestCase):
             self.assertAlmostEqual(s_expected[i], replicate[i], 3)
 
         self.assertAlmostEqual(0.3824, replication.get_reference_weight(0), 4)
-        self.assertAlmostEqual(0.3012, replication.get_reference_weight(1), 4)
-        self.assertAlmostEqual(0.3652, replication.get_reference_weight(2), 4)
+        self.assertAlmostEqual(0.3652, replication.get_reference_weight(1), 4)
+        self.assertAlmostEqual(0.3012, replication.get_reference_weight(2), 4)
 
     def test_pseudo_fourier_decomposition(self):
         x_axis, y, refs = prepare_fourier(0.0)
@@ -239,14 +238,28 @@ class PodTest(unittest.TestCase):
         self.assertEqual(5, decomposition.get_principal_component_index(0))
         self.assertEqual(1, decomposition.get_principal_component_index(1))
         self.assertEqual(16, decomposition.get_principal_component_index(2))
+        self.assertAlmostEqual(-1.0334, decomposition.get_reference_weight(0), 4)
+        self.assertAlmostEqual(0.2775, decomposition.get_reference_weight(1), 4)
+        self.assertAlmostEqual(0.1579, decomposition.get_reference_weight(2), 4)
 
     def test_pseudo_fourier_decomposition_shift(self):
         x_axis, y, refs = prepare_fourier(-0.5 * math.pi)
         # computes decomposition
         decomposition = pod.decompose(y, refs, epsilon=1E-6, max_iter=20)
         self.assertEqual(3, decomposition.get_principal_component_index(0))
-        self.assertEqual(1, decomposition.get_principal_component_index(1))
+        self.assertEqual(33, decomposition.get_principal_component_index(1))
         self.assertEqual(51, decomposition.get_principal_component_index(2))
+        self.assertAlmostEqual(-0.9690, decomposition.get_reference_weight(0), 4)
+        self.assertAlmostEqual(-0.3085, decomposition.get_reference_weight(1), 4)
+        self.assertAlmostEqual(0.21770, decomposition.get_reference_weight(2), 4)
+
+    def test_pseudo_fourier_decomposition_small_shift(self):
+        x_axis, y, refs = prepare_fourier(-0.5 * math.pi, n_ref=5)
+        # computes decomposition
+        decomposition = pod.decompose(y, refs, epsilon=1E-6, max_iter=20)
+        self.assertEqual(4, decomposition.get_principal_component_index(0))
+        self.assertEqual(9, decomposition.get_principal_component_index(1))
+        self.assertEqual(0, decomposition.get_principal_component_index(2))
 
 
 if __name__ == '__main__':
