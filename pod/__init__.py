@@ -15,7 +15,7 @@ Usage example:
 >>> decomposition = pod.decompose(target, refs, epsilon=1E-6, max_iter=90)
 >>> print(decomposition.get_decomposition())
 [-1.9999991745134178, 1.4999993808850638]
->>> print(decomposition.get_reference_weights())
+>>> print(decomposition.reference_weights)
 [0.96153806466991254, 0.0, 0.61538436138874408]
 
 The example above shows the reconstruction of the target using 3 reference
@@ -82,9 +82,9 @@ class IterativeDecomposition(object):
         if not references:
             raise ValueError('at least one reference is required')
 
-        self._dim = len(references[0])
+        dimension = len(references[0])
         for r in references:
-            if len(r) != self._dim:
+            if len(r) != dimension:
                 raise ValueError('all references should have the same length')
 
         self._reference_points: List[numpy.ndarray] = []
@@ -92,11 +92,11 @@ class IterativeDecomposition(object):
         for count, r in enumerate(references):
             ref = numpy.array(r)
             if ref.tolist() in (item.tolist() for item in self._reference_points):
-                logging.warning(f'filtered out redundant reference {count:d}')
+                logging.warning(f'filtered out redundant vector {count:d}')
                 self._ignores.append(ref.tolist())
 
             elif numpy.linalg.norm(ref) == 0.0:
-                logging.warning(f'filtered out reference at origin {count:d}')
+                logging.warning(f'filtered out vector at origin {count:d}')
                 self._ignores.append(ref.tolist())
 
             self._reference_points.append(ref)
@@ -140,7 +140,8 @@ class IterativeDecomposition(object):
         """
         return sorted(self._weights, reverse=True)[self.get_principal_component_index(position)]
 
-    def get_reference_weights(self) -> numpy.ndarray:
+    @property
+    def reference_weights(self) -> numpy.ndarray:
         """
         Returns the weights assigned to the references in order to construct the
         proposed input.
@@ -173,7 +174,7 @@ class IterativeDecomposition(object):
         @param rank: the rank of the reference (0 means principal component)
         @return: a reference vector
         """
-        ref_weights = self.get_reference_weights()
+        ref_weights = self.reference_weights
         sorted_weights = [(pos - 1, weight) for pos, weight in enumerate(ref_weights)]
         sorted_weights.sort(key=lambda x: abs(x[1]), reverse=True)
         max_abs_weight_pos = sorted_weights[rank][0]
@@ -189,7 +190,7 @@ class IterativeDecomposition(object):
         @param rank: the rank of the reference (0 means principal component)
         @return: position in the initial reference list
         """
-        ref_weights = self.get_reference_weights()
+        ref_weights = self.reference_weights
         sorted_weights = list(enumerate(ref_weights))
         sorted_weights.sort(key=lambda x: abs(x[1]), reverse=True)
         return sorted_weights[rank][0]
