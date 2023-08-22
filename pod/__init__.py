@@ -91,7 +91,7 @@ class IterativeDecomposition(object):
         self._ignores = []
         for count, r in enumerate(references):
             ref = numpy.array(r)
-            if ref.tolist() in (item.tolist() for item in self._reference_points):
+            if r in (item.tolist() for item in self._reference_points):
                 logging.warning(f'filtered out redundant vector {count:d}')
                 self._ignores.append(count)
 
@@ -279,12 +279,7 @@ class BaseDecomposition(IterativeDecomposition):
         IterativeDecomposition.resolve(self, point)
         logging.debug(' ------------- STARTING PROCESS -------------')
         self._start = numpy.array(point)
-        reference_points_indices = []
-        for count, ref in enumerate(self._reference_points):
-            if count not in self._ignores:
-                reference_points_indices.append(count)
-            else:
-                logging.info(f'ignoring #{count}: {ref}')
+        reference_points_indices = [count for count in range(len(self._reference_points)) if count not in self._ignores]
         projector = self._project_point(numpy.array(point), reference_points_indices)
         diff = None
         logging.debug(f'distance to projection: {numpy.linalg.norm(projector):f}')
