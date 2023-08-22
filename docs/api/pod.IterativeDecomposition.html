@@ -233,16 +233,6 @@
         
 
         
-            <div class="itemName"><code><a href="#get_reference_weights" class="internal-link" title="pod.IterativeDecomposition.get_reference_weights">get<wbr></wbr>_reference<wbr></wbr>_weights</a></code>
-            </div>
-        
-
-    </li><li class="">
-        
-        
-        
-
-        
             <div class="itemName"><code><a href="#resolve" class="internal-link" title="pod.IterativeDecomposition.resolve">resolve</a></code>
             </div>
         
@@ -266,13 +256,13 @@
         <div class="childrenKindTitle">Attributes</div>
         <ul>
     
-    <li class="private">
+    <li class="">
         
         
         
 
         
-            <div class="itemName"><code><a href="#_dim" class="internal-link" title="pod.IterativeDecomposition._dim">_dim</a></code>
+            <div class="itemName"><code><a href="#reference_weights" class="internal-link" title="pod.IterativeDecomposition.reference_weights">reference<wbr></wbr>_weights</a></code>
             </div>
         
 
@@ -507,23 +497,18 @@
   </tr><tr class="method">
     
     <td>Method</td>
-    <td><code><a href="#get_reference_weights" class="internal-link" title="pod.IterativeDecomposition.get_reference_weights">get<wbr></wbr>_reference<wbr></wbr>_weights</a></code></td>
-    <td>Returns the weights assigned to the references in order to construct the proposed input.</td>
-  </tr><tr class="method">
-    
-    <td>Method</td>
     <td><code><a href="#resolve" class="internal-link" title="pod.IterativeDecomposition.resolve">resolve</a></code></td>
     <td>Iterates decomposition until convergence or max iteration is reached.</td>
+  </tr><tr class="property">
+    
+    <td>Property</td>
+    <td><code><a href="#reference_weights" class="internal-link" title="pod.IterativeDecomposition.reference_weights">reference<wbr></wbr>_weights</a></code></td>
+    <td>Returns the weights assigned to the references in order to construct the proposed input.</td>
   </tr><tr class="method private">
     
     <td>Method</td>
     <td><code><a href="#_compute_decomposition" class="internal-link" title="pod.IterativeDecomposition._compute_decomposition">_compute<wbr></wbr>_decomposition</a></code></td>
     <td>Computes current decomposition result on the fly.</td>
-  </tr><tr class="instancevariable private">
-    
-    <td>Instance Variable</td>
-    <td><code><a href="#_dim" class="internal-link" title="pod.IterativeDecomposition._dim">_dim</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="instancevariable private">
     
     <td>Instance Variable</td>
@@ -656,7 +641,7 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">get_error_norm</span><span class="function-signature">(self)</span>:
+    <span class="py-keyword">def</span> <span class="py-defname">get_error_norm</span><span class="function-signature">(self) -&gt; <code>float</code></span>:
     
     <a class="headerLink" href="#get_error_norm" title="pod.IterativeDecomposition.get_error_norm">
       
@@ -743,30 +728,6 @@
 </div><div class="basemethod">
   
   
-  <a name="pod.IterativeDecomposition.get_reference_weights">
-    
-  </a>
-  <a name="get_reference_weights">
-    
-  </a>
-  <div class="functionHeader">
-    
-    
-    <span class="py-keyword">def</span> <span class="py-defname">get_reference_weights</span><span class="function-signature">(self)</span>:
-    
-    <a class="headerLink" href="#get_reference_weights" title="pod.IterativeDecomposition.get_reference_weights">
-      
-      
-      ¶
-    </a>
-  </div>
-  <div class="docstring functionBody">
-    
-    <div><p>Returns the weights assigned to the references in order to construct the proposed input.</p></div>
-  </div>
-</div><div class="basemethod">
-  
-  
   <a name="pod.IterativeDecomposition.resolve">
     
   </a>
@@ -787,6 +748,30 @@
   <div class="docstring functionBody">
     <div class="interfaceinfo">overridden in <code><a href="pod.BaseDecomposition.html" class="internal-link">pod.BaseDecomposition</a></code></div>
     <div><p>Iterates decomposition until convergence or max iteration is reached.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">point:</span>list</td><td class="fieldArgDesc">coordinates of the point to be decompositiond</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer">list</td><td class="fieldArgDesc">coordinates of decompositiond point</td></tr></table></div>
+  </div>
+</div><div class="baseproperty">
+  
+  
+  <a name="pod.IterativeDecomposition.reference_weights">
+    
+  </a>
+  <a name="reference_weights">
+    
+  </a>
+  <div class="functionHeader">
+    @property<br />
+    <span class="py-defname">reference_weights</span>: <code>numpy.ndarray</code> =
+    
+    <a class="headerLink" href="#reference_weights" title="pod.IterativeDecomposition.reference_weights">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p>Returns the weights assigned to the references in order to construct the proposed input.</p></div>
+    
   </div>
 </div><div class="basemethod private">
   
@@ -811,30 +796,6 @@
   <div class="docstring functionBody">
     
     <div><p>Computes current decomposition result on the fly.</p></div>
-  </div>
-</div><div class="baseinstancevariable private">
-  
-  
-  <a name="pod.IterativeDecomposition._dim">
-    
-  </a>
-  <a name="_dim">
-    
-  </a>
-  <div class="functionHeader">
-    
-    <span class="py-defname">_dim</span> =
-    
-    <a class="headerLink" href="#_dim" title="pod.IterativeDecomposition._dim">
-      
-      
-      ¶
-    </a>
-  </div>
-  <div class="functionBody">
-    
-    <div><p class="undocumented">Undocumented</p></div>
-    
   </div>
 </div><div class="baseinstancevariable private">
   
@@ -1040,7 +1001,7 @@
   <div class="container">
     <a href="index.html">API Documentation</a> for pod,
   generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-    23.4.1 at 2023-08-22 11:45:31.
+    23.4.1 at 2023-08-22 17:01:47.
   </div>
 
   <!-- Search related scripts needs to be loaded at the end of HTML 
