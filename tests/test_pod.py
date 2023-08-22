@@ -25,6 +25,8 @@ import math
 import logging
 from decimal import Decimal
 
+from numpy import array
+
 import pod
 
 logging.basicConfig(level=logging.DEBUG)
@@ -87,8 +89,8 @@ class PodTest(unittest.TestCase):
         index1 = [0.8, 2.0]
         index2 = [1.2, -0.5]
         fund = [1.0, 0.5]
-        r = pod.BaseDecomposition([index1, index2], max_iter=20)
-        replicate = r.resolve(fund)
+        r = pod.BaseDecomposition(array([index1, index2]), max_iter=20)
+        replicate = r.resolve(array(fund))
 
         s_expected = [1.0, 0.5]
         for i in range(len(s_expected)):
@@ -102,8 +104,8 @@ class PodTest(unittest.TestCase):
         index1 = [0.8, 2.0, -5.0]
         index2 = [1.2, -0.5, -1.0]
         fund = [1.0, 0.5, 3.0]
-        r = pod.BaseDecomposition([index1, index2], max_iter=40)
-        replicate = r.resolve(fund)
+        r = pod.BaseDecomposition(array([index1, index2]), max_iter=40)
+        replicate = r.resolve(array(fund))
 
         logging.debug(f'result: {r}')
         s_expected = [-0.265192, -0.961998, 2.2127700]
@@ -120,8 +122,8 @@ class PodTest(unittest.TestCase):
         # target: 2 X first point
         fund = [1.6, 4.0, -2.0]
         #
-        r = pod.BaseDecomposition(indices, max_iter=20)
-        result = r.resolve(fund)
+        r = pod.BaseDecomposition(array(indices), max_iter=20)
+        result = r.resolve(array(fund))
 
         logging.debug(f'result: {result}')
         s_expected = [1.6, 4.0, -2.0]
@@ -138,8 +140,8 @@ class PodTest(unittest.TestCase):
         # target: 2 X first point - 1 X last point
         fund = [-3.4, 7.0, -2.4]
         #
-        r = pod.BaseDecomposition(indices, epsilon=1E-10, max_iter=20)
-        result = r.resolve(fund)
+        r = pod.BaseDecomposition(array(indices), epsilon=1E-10, max_iter=20)
+        result = r.resolve(array(fund))
 
         logging.debug(f'result: {r}')
         self.assertAlmostEqual(2., r.get_reference_weight(0))
@@ -158,8 +160,8 @@ class PodTest(unittest.TestCase):
         # target: 2 X first point - 1 X last point + noise
         fund = [-3.6, 6.5, -2.7]
         #
-        r = pod.BaseDecomposition(indices, epsilon=1E-6, max_iter=30)
-        replicate = r.resolve(fund)
+        r = pod.BaseDecomposition(array(indices), epsilon=1E-6, max_iter=30)
+        replicate = r.resolve(array(fund))
 
         logging.debug(f'result: {r}')
         s_expected = [-3.6, 6.5, -2.7]
@@ -177,8 +179,8 @@ class PodTest(unittest.TestCase):
         # target: 2 X first point - 1 X last point
         fund = [-3.4, 7.0, -2.4]
         #
-        r = pod.BaseDecomposition(indices, epsilon=1E-6, max_iter=30, max_factors=2)
-        replicate = r.resolve(fund)
+        r = pod.BaseDecomposition(array(indices), epsilon=1E-6, max_iter=30, max_factors=2)
+        replicate = r.resolve(array(fund))
 
         logging.debug(f'result: {r}')
         s_expected = [-3.42444, 6.940277, -2.530706]

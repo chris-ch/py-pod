@@ -37,71 +37,66 @@ GNU General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 """
+from __future__ import annotations
+
 __all__ = ['decompose']
 
 import os
 import logging
 from typing import Iterable, List, Optional
 
-import numpy
+from numpy import ndarray, array, zeros, matmul, subtract, multiply, dot, argmin
+from numpy.linalg import linalg
 
 
-def decompose(source, references: List[List[float]],
-              epsilon=1E-10, max_iter=20,
-              max_factors=None, max_weight=None
-              ):
+def decompose(source: List[float], references: List[List[float]],
+              epsilon: float = 1E-10, max_iter: int = 20,
+              max_factors: Optional[int] = None, max_weight: Optional[float] = None
+              ) -> BaseDecomposition:
     """
     Decomposing the source using the proposed reference points.
     
     @param max_weight:
     @param source: input point
-    @type source: list
     @param references: list of reference points
-    @type references: list
     @param epsilon: limit of the error sequence for stopping iteration
-    @type epsilon: float
     @param max_iter: safeguard for stopping iteration
-    @type max_iter: int
     @param max_factors: limit for the number of reference points, None allowing to use all of them
-    @type max_factors: int
     @return: decomposition details
     @rtype: IterativeDecomposition
     """
-    r = BaseDecomposition(references, epsilon, max_iter, max_factors, max_weight)
-    r.resolve(source)
+    r = BaseDecomposition(array(references), epsilon, max_iter, max_factors, max_weight)
+    r.resolve(array(source))
     return r
 
 
-class IterativeDecomposition(object):
+class BaseDecomposition(object):
     """
     Decomposition interface definition.
     """
 
-    def __init__(self, references: List[List[float]], epsilon: float = 1E-10,
-                 max_iter: int = 20, max_factors: Optional[int] = None):
-        if not references:
+    def __init__(self, references: ndarray, epsilon: float = 1E-10,
+                 max_iter: int = 20, max_factors: Optional[int] = None,
+                 max_weight: Optional[float] = None):
+        self._max_weight = max_weight
+        if references.shape == (0,):
             raise ValueError('at least one reference is required')
 
-        dimension = len(references[0])
-        for r in references:
-            if len(r) != dimension:
-                raise ValueError('all references should have the same length')
-
-        self._reference_points: List[numpy.ndarray] = []
+        reference_points: List[ndarray] = []
         self._ignores = []
-        for count, r in enumerate(references):
-            ref = numpy.array(r)
-            if r in (item.tolist() for item in self._reference_points):
+        for count, row in enumerate(references):
+            if row.tolist() in (item.tolist() for item in reference_points):
                 logging.warning(f'filtered out redundant vector {count:d}')
                 self._ignores.append(count)
 
-            elif numpy.linalg.norm(ref) == 0.0:
+            elif linalg.norm(row) == 0.0:
                 logging.warning(f'filtered out vector at origin {count:d}')
                 self._ignores.append(count)
 
-            self._reference_points.append(ref)
+            reference_points.append(row)
 
-        self._weights = numpy.zeros(len(self._reference_points))
+        self._reference_points = array(reference_points)
+        self._weights = zeros(len(self._reference_points))
         self._epsilon = epsilon
         self._start = None
         self._max_iter = max_iter
@@ -113,47 +108,34 @@ class IterativeDecomposition(object):
 
         self._error_norm = None
 
-    def _compute_decomposition(self) -> numpy.ndarray:
+    def _compute_decomposition(self) -> ndarray:
         """
         Computes current decomposition result on the fly.
         """
-        return numpy.matmul(self._weights, self._reference_points)
+        return matmul(self._weights, self._reference_points)
 
-    def resolve(self, point: List[float]):
-        """
-        Iterates decomposition until convergence or max iteration is reached.
-        
-        @param point: coordinates of the point to be decompositiond
-        @type point: list
-        @return: coordinates of decompositiond point
-        @rtype: list
-        """
-        pass
-
-    def get_reference_weight(self, position):
+    def get_reference_weight(self, position: int) -> float:
         """
         Returns the weight assigned to the reference provided in the constructor
         at the indicated position.
         
         @param position: position of the reference in the list provided in the constructor
-        @type position: int
         """
         return self._weights[self.get_principal_component_index(position)]
 
     @property
-    def reference_weights(self) -> numpy.ndarray:
+    def reference_weights(self) -> ndarray:
         """
         Returns the weights assigned to the references in order to construct the
         proposed input.
         """
         return self._weights
 
-    def get_decomposition(self) -> numpy.ndarray:
+    def get_decomposition(self) -> ndarray:
         """
         Returns the result of the decomposition process.
         
         @return: decomposition result
-        @rtype: list
         """
         return self._compute_decomposition()
 
@@ -162,9 +144,8 @@ class IterativeDecomposition(object):
         Returns a measure of the decomposition error.
         
         @return: length of the difference between the result and the initial point
-        @rtype: float
         """
-        return numpy.linalg.norm(numpy.subtract(self._compute_decomposition(), self._start))
+        return linalg.norm(subtract(self._compute_decomposition(), self._start))
 
     def get_principal_component(self, rank: int):
         """
@@ -179,7 +160,7 @@ class IterativeDecomposition(object):
         sorted_weights.sort(key=lambda x: abs(x[1]), reverse=True)
         max_abs_weight_pos = sorted_weights[rank][0]
         weight = sorted_weights[rank][1]
-        main_component = numpy.multiply(self._reference_points[max_abs_weight_pos], weight)
+        main_component = multiply(self._reference_points[max_abs_weight_pos], weight)
         return main_component.to_list()
 
     def get_principal_component_index(self, rank: int) -> int:
@@ -203,40 +184,26 @@ class IterativeDecomposition(object):
         out += str(self._weights)
         return out
 
-
-class BaseDecomposition(IterativeDecomposition):
-    """
-    Decomposition on a set of reference points.
-    """
-
-    def __init__(self, references,
-                 epsilon: float = 1E-10,
-                 max_iter: int = 20,
-                 max_factors: Optional[int] = None,
-                 max_weight: Optional[float] = None):
-        IterativeDecomposition.__init__(self, references, epsilon, max_iter, max_factors)
-        self._max_weight = max_weight
-
-    def _project_point(self, point: numpy.ndarray, reference_points_indices: Iterable[int]) -> numpy.ndarray:
+    def _project_point(self, point: ndarray, reference_points_indices: Iterable[int]) -> ndarray:
         """ Projects onto the closest of the straight lines defined by 
         the reference points.
         """
         # computes projection of source point to each subspace defined by ref points
-        if numpy.linalg.norm(point) <= self._epsilon:
+        if linalg.norm(point) <= self._epsilon:
             # already matched: do nothing
             return point
 
-        def project(point: numpy.ndarray, support: numpy.ndarray) -> numpy.ndarray:
-            return numpy.multiply(support, numpy.dot(point, support)) / numpy.dot(support, support)
+        def project(vector: ndarray, support: ndarray) -> ndarray:
+            return multiply(support, dot(vector, support)) / dot(support, support)
 
-        def units(vector: numpy.ndarray, unit_vector: numpy.ndarray) -> float:
+        def units(vector: ndarray, unit_vector: ndarray) -> float:
             """
             How many times the vector fits in the specified units (in norm).
 
             The sign is meaningful only if both vectors are colinear.
             """
-            ratio = numpy.linalg.norm(vector) / numpy.linalg.norm(unit_vector)
-            if numpy.linalg.norm(numpy.subtract(vector, unit_vector)) > numpy.linalg.norm(unit_vector):
+            ratio = linalg.norm(vector) / linalg.norm(unit_vector)
+            if linalg.norm(subtract(vector, unit_vector)) > linalg.norm(unit_vector):
                 # vectors are in opposite directions
                 ratio = -ratio
             return ratio
@@ -257,32 +224,32 @@ class BaseDecomposition(IterativeDecomposition):
             return point
 
         # finds main driver (shortest distance to ref line)
-        distances = numpy.array([numpy.linalg.norm(numpy.subtract(point, project(point, self._reference_points[ref_point_index]))) for ref_point_index in ref_points_indices])
+        distances = array(
+            [linalg.norm(subtract(point, project(point, self._reference_points[ref_point_index]))) for
+             ref_point_index in ref_points_indices])
 
-        closest_position = numpy.argmin(distances)
+        closest_position = argmin(distances)
         closest_point = self._reference_points[ref_points_indices[closest_position]]
         projected = project(point, closest_point)
         self._weights[ref_points_indices[closest_position]] += units(projected, closest_point)
-        logging.debug(f'closest driver: {str(closest_point)}, weight={str(self._weights[ref_points_indices[closest_position]])}')
+        logging.debug(
+            f'closest driver: {str(closest_point)}, weight={str(self._weights[ref_points_indices[closest_position]])}')
 
-        return numpy.subtract(point, projected)
+        return subtract(point, projected)
 
-    def resolve(self, point: List[float]):
+    def resolve(self, point: ndarray) -> ndarray:
         """
         Iterates decomposition until convergence or max iteration is reached.
         
         @param point: coordinates of the point to decompose
-        @type point: list
         @return: coordinates of decomposed point
-        @rtype: list
         """
-        IterativeDecomposition.resolve(self, point)
         logging.debug(' ------------- STARTING PROCESS -------------')
-        self._start = numpy.array(point)
+        self._start = point
         reference_points_indices = [count for count in range(len(self._reference_points)) if count not in self._ignores]
-        projector = self._project_point(numpy.array(point), reference_points_indices)
+        projector = self._project_point(array(point), reference_points_indices)
         diff = None
-        logging.debug(f'distance to projection: {numpy.linalg.norm(projector):f}')
+        logging.debug(f'distance to projection: {linalg.norm(projector):f}')
         i = 0
         decomposition = None
         while (diff is None) or (diff > self._epsilon and i < self._max_iter):
@@ -300,12 +267,12 @@ class BaseDecomposition(IterativeDecomposition):
                 reference_points_indices = enabled_drivers
 
             decomposition = self._compute_decomposition()
-            diff = numpy.linalg.norm(numpy.subtract(decomposition, previous))
+            diff = linalg.norm(subtract(decomposition, previous))
             logging.debug('improvement: %f' % diff)
-            logging.debug(f'distance to projection: {numpy.linalg.norm(projector):f}')
+            logging.debug(f'distance to projection: {linalg.norm(projector):f}')
             logging.debug(f'decomposition: {str(decomposition)}')
 
-        logging.debug(f'start:{numpy.array(point)}')
+        logging.debug(f'start:{array(point)}')
         if decomposition.any():
-            logging.debug(f'diff:{numpy.subtract(decomposition, numpy.array(point))}')
-        return decomposition.tolist()
+            logging.debug(f'diff:{subtract(decomposition, array(point))}')
+        return decomposition
