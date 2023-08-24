@@ -45,7 +45,7 @@ import os
 import logging
 from typing import Iterable, List, Optional
 
-from numpy import ndarray, array, zeros, matmul, subtract, multiply, dot, argmin
+from numpy import ndarray, array, zeros, matmul, subtract, multiply, dot, argmin, zeros_like
 from numpy.linalg import linalg
 
 
@@ -203,7 +203,7 @@ class BaseDecomposition(object):
             The sign is meaningful only if both vectors are colinear.
             """
             ratio = linalg.norm(vector) / linalg.norm(unit_vector)
-            if linalg.norm(subtract(vector, unit_vector)) > linalg.norm(unit_vector):
+            if dot(vector, unit_vector) < 0:
                 # vectors are in opposite directions
                 ratio = -ratio
             return ratio

@@ -98,7 +98,7 @@ class PodTest(unittest.TestCase):
 
     def test_decompose_002(self):
         """
-        Decomposing with 2 points in 3 dimensions: overdetermined system (unusual),
+        Decomposing with 2 points in 3 dimensions: overdetermined system,
         will find the best approximation given the constraint.
         """
         index1 = [0.8, 2.0, -5.0]
@@ -262,6 +262,38 @@ class PodTest(unittest.TestCase):
         self.assertEqual(4, decomposition.get_principal_component_index(0))
         self.assertEqual(9, decomposition.get_principal_component_index(1))
         self.assertEqual(0, decomposition.get_principal_component_index(2))
+
+    def test_decompose_009(self):
+        """
+        Decomposing with 2 points in 3 dimensions: overdetermined system,
+        will find the best approximation given the constraint.
+        """
+        index1 = [0.8, 2.0, -5.0]
+        index2 = [1.2, -0.5, -1.0]
+        fund = [1.0, -1., 3.0]
+        r = pod.BaseDecomposition(array([index1, index2]), max_iter=40)
+        replicate = r.resolve(array(fund))
+
+        logging.debug(f'result: {r}')
+        s_expected = [0.3715, -1.7263, 2.6089]
+        for i in range(len(s_expected)):
+            self.assertAlmostEqual(s_expected[i], replicate[i], 4)
+
+    def test_decompose_010(self):
+        """
+        Decomposing with 2 points in 3 dimensions: overdetermined system,
+        will find the best approximation given the constraint.
+        """
+        index1 = [0.8, 2.0, 0.]
+        index2 = [1.2, -0.5, 0.]
+        fund = [1.0, -1., 3.0]
+        r = pod.BaseDecomposition(array([index1, index2]), max_iter=40)
+        replicate = r.resolve(array(fund))
+
+        logging.debug(f'result: {r}')
+        s_expected = [1., -1., 0.]
+        for i in range(len(s_expected)):
+            self.assertAlmostEqual(s_expected[i], replicate[i], 4)
 
 
 if __name__ == '__main__':
