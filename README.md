@@ -81,6 +81,7 @@ Chevron stock price:
 
 ![Out-of-samples replication of Chevron](docs/out-of-samples-chevron.png?raw=true "Out-of-samples replication of Chevron")
 
+The notebook for the above example is available [here](https://github.com/chris-ch/asset-replication).
 
 ## Documentation
 Generated with PyDoctor:
