@@ -31,11 +31,18 @@ only 3 data points for past performances.
 | Fund        | 1     | -1    | 3     |
 | Replication | 1     | -1    | 0     |
 
+With this simple example obviously the replication would be achieved through projecting the _fund_ onto the plane
+_(stock1, stock2)_. However, in general, we don't know beforehand the stocks that are best suited for the replication.
+
+Note also that in our example neither _Stock 1_ nor _Stock 2_ have a component on _Day 3_: the
+replication on that day will always be _0_., so that like _Stock 1_ and _Stock 2_ the replication will
+lie on the _(x, y)_ plane.
+
 The chart below shows the first and final projections in the case of a 3D space:
 3 daily performances for a 2 stocks-universe, plus a target fund to replicate.
 
-The first projection is performed on the second stock (yellow), since it better
-matches the fund performances than those of the first stock.
+The first projection is performed on the second stock (yellow), since it is found to better
+match the fund performances than those of the first stock.
 
 ![Example showing the first and final projections in the case of a 3D space](docs/first_and_final_projections.png?raw=true "Example")
 
@@ -43,11 +50,37 @@ The interactive version of the chart above is available
 at [math3d.org](https://www.math3d.org/oXFLiVH54).
 
 From a time perspective:
-![Example showing the time series](docs/time-view.png?raw=true "Example")
-
+![Example showing the time series](docs/time-view.png?raw=true "Example as time series")
 
 Typical sizes for asset replication: 1000 dimensions (~5 years of daily data), 200 candidate assets
 for use in replication, target portfolio with 5 assets.
+
+## A more realistic example: replicating Chevron (CVX)
+
+We are using daily data from 2018 through 2021 in order to calibrate the model, which gives us the weights we will be 
+using for 2022 on the 5 stocks selected by the algorithm. The universe is made of the 300 biggest NYSE-traded stocks.
+
+Running the algorithm on the training data set after loading the data, we get the 5 following stocks with their weights:
+
+| Symbol | Name                     | Weight              |
+|--------|--------------------------|---------------------|
+| XOM    | Exxon Mobil Corporation  | 0.3084866004643928  | 
+| COP    | ConocoPhillips           | 0.2786798383715602  | 
+| KMI    | Kinder Morgan, Inc.      | 0.2377540534536145  | 
+| ITW    | Illinois Tool Works Inc. | 0.14543150395336008 | 
+| ETR    | Entergy Corporation      | 0.1132109459644928  | 
+
+It is reassuring that the model finds stocks mostly active in the same sector as Chevron.
+
+Looking at the in-samples data for a visual confirmation that the orange line (portfolio) closely matches the
+Chevron stock price:
+
+![In-samples replication of Chevron](docs/in-samples-chevron.png?raw=true "In-samples replication of Chevron")
+
+"Live" replication using out-of-samples data:
+
+![Out-of-samples replication of Chevron](docs/out-of-samples-chevron.png?raw=true "Out-of-samples replication of Chevron")
+
 
 ## Documentation
 Generated with PyDoctor:
