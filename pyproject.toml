@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py-pod"
-version = "2.0.2"
+version = "2.0.3"
 description = "Implementation of a Proper Orthogonal Decomposition (POD) method"
 authors = ["Christophe <christophe.alexandre@pm.me>"]
 readme = "README.md"

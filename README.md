@@ -20,6 +20,17 @@ selected reference points will approximate the target signal *S*.
 
 ## Use case: asset replication
 
+In order to illustrate how the algorithm works, let's assume we
+replicate a _fund_ using two assets _stock 1_ and _stock 2_, with
+only 3 data points for past performances.
+
+|             | Day 1 | Day 2 | Day 3 |
+|-------------|-------|-------|-------|
+| Stock 1     | 0.8   | 2     | 0     |
+| Stock 2     | 1.2   | -0.5  | 0     |
+| Fund        | 1     | -1    | 3     |
+| Replication | 1     | -1    | 0     |
+
 The chart below shows the first and final projections in the case of a 3D space:
 3 daily performances for a 2 stocks-universe, plus a target fund to replicate.
 
@@ -30,6 +41,10 @@ matches the fund performances than those of the first stock.
 
 The interactive version of the chart above is available 
 at [math3d.org](https://www.math3d.org/oXFLiVH54).
+
+From a time perspective:
+![Example showing the time series](docs/time-view.png?raw=true "Example")
+
 
 Typical sizes for asset replication: 1000 dimensions (~5 years of daily data), 200 candidate assets
 for use in replication, target portfolio with 5 assets.
